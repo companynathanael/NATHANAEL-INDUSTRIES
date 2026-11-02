@@ -13,7 +13,7 @@ Detalhes: @metas/COMO-USAR.md
 
 ## Documentos de referência (sempre consultar)
 - @docs/ORGANIZACAO-IAS.md — Organização das IAs (Auxiliares: Horácio, Miquéias; Motores: Asafe, Gather, Bezalel, Fornalha).
-- @docs/ROADMAP.md — **Ordem de criação:** Asafe → Gather → Fornalha → Bezalel → Submotores → Horácio e Miquéias (construídos pelo Bezalel).
+- @docs/ROADMAP.md — **Ordem de criação (confirmada):** Asafe → Gather → Fornalha → Bezalel → Submotores → Horácio e Miquéias (construídos pelo Bezalel).
 - @docs/ASAFE.md — Progresso do Asafe (meta atual: 50%) e como rodar.
 - @docs/ELETRONANOLOGIA.md — Tecnologia-símbolo do Asafe: armazena eletricidade para as IAs seguirem funcionando quando a luz cai. Em pesquisa.
 
@@ -25,7 +25,7 @@ Detalhes: @metas/COMO-USAR.md
 - **Motores (4):** Asafe, Gather, **Bezalel** (3º: criador de IAs; preto e verde; logo bigorna) e **Fornalha** (4º: transformação — fundição de habilidades, prova de fogo, desempenho; preto e laranja; logo fornalha).
 - Linha de produção: Gather (APIs) → Fornalha (funde e prova) → Bezalel (molda a IA); Asafe sustenta tudo.
 - Logos e cores: @identidade/IDENTIDADE.md
-- **Submotores:** Asafe 3 · Gather 3 · total 6. São peças de **sustentação**: NÃO tiram funções do motor; sustentam a diferença entre IA básica e motor. Pilares confirmados: Continuidade, Memória, Autonomia. Nomes temporários: Asafe → Âncora, Anais, Arbítrio; Gather → Guardião, Gravador, Guia. Ainda não produzidos.
+- **Submotores:** 3 por motor · total 12. São peças de **sustentação**: NÃO tiram funções do motor; sustentam a diferença entre IA básica e motor. Pilares confirmados: Continuidade, Memória, Autonomia. Nomes temporários: Asafe → Âncora, Anais, Arbítrio; Gather → Guardião, Gravador, Guia; Fornalha → Fole, Fichário, Faísca; Bezalel → Baluarte, Baú, Bússola. Ainda não produzidos.
 
 ## Código
 - `asafe/` — API do Asafe (Python/FastAPI + SQLite). Testes em `tests/` (`python -m pytest -q`).

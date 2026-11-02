@@ -96,18 +96,18 @@ Gather (APIs) → Fornalha (funde e prova) → Bezalel (molda a IA) → IA pront
   - **Desempenho:** mede velocidade e eficiência do que sai da fornalha e reprova o que for lento ou desperdiçar recursos.
 - **Não faz:** energia e infraestrutura (são do Asafe).
 
-### Submotores (subs do Asafe e do Gather)
+### Submotores (subs dos 4 motores)
 - **Status:** Estrutura definida
-- **Motores:** Asafe e Gather.
-- **Submotores:** Asafe — 3 · Gather — 3 · **Total: 6**.
+- **Motores:** Asafe, Gather, Fornalha e Bezalel.
+- **Submotores:** 3 por motor · **Total: 12**.
 - Peças de **sustentação**: não tiram funções do motor; sustentam a diferença entre uma IA básica e um motor (pilares confirmados: Continuidade, Memória e Autonomia).
-- **Nomes temporários:** Asafe → Âncora, Anais, Arbítrio · Gather → Guardião, Gravador, Guia.
-- Serão criados após o Asafe e o Gather, e antes do Horácio e do Miquéias.
+- **Nomes temporários:** Asafe → Âncora, Anais, Arbítrio · Gather → Guardião, Gravador, Guia · Fornalha → Fole, Fichário, Faísca · Bezalel → Baluarte, Baú, Bússola.
+- Serão criados após os 4 motores, e antes do Horácio e do Miquéias.
 - Detalhes em [ROADMAP.md](ROADMAP.md).
 
 > Outras IAs desenvolvedoras serão criadas futuramente.
 
 ---
 
-## Ordem de criação
-1. Asafe → 2. Gather → 3. Fornalha → 4. Bezalel → 5. Submotores → 6. Horácio e Miquéias (construídos pelo Bezalel)
+## Ordem de criação (✅ confirmada)
+1. Asafe → 2. Gather → 3. Fornalha → 4. Bezalel → 5. Submotores (12) → 6. Horácio e Miquéias (construídos pelo Bezalel)
