@@ -15,7 +15,7 @@ Detalhes: @metas/COMO-USAR.md
 - @docs/ORGANIZACAO-IAS.md — Organização das IAs (Auxiliares: Horácio, Miquéias; Motores: Asafe, Gather, Bezalel, Fornalha).
 - @docs/ROADMAP.md — **Ordem de criação (confirmada):** Asafe → Gather → Fornalha → Bezalel → Submotores → Horácio e Miquéias (construídos pelo Bezalel).
 - @docs/ASAFE.md — Progresso do Asafe (meta atual: 50%) e como rodar.
-- @docs/PROMPTS-APARENCIA.md — Prompts para gerar a aparência da Fornalha e do Bezalel.
+- @docs/PROMPTS-APARENCIA.md — Prompt para gerar a aparência da Fornalha (o do Bezalel está no repositório `companynathanael/Bezalel`).
 - @docs/ELETRONANOLOGIA.md — Tecnologia-símbolo do Asafe: armazena eletricidade para as IAs seguirem funcionando quando a luz cai. Em pesquisa.
 
 ## Resumo rápido
@@ -32,5 +32,5 @@ Detalhes: @metas/COMO-USAR.md
 - `asafe/` — API do Asafe (Python/FastAPI + SQLite). Testes em `tests/` (`python -m pytest -q`).
   - `armazenamento.py` (arquivos, cota, backups), `servidores.py` (métricas, alertas, comandos), `backup.py` (CLI), `sentinela.py` (roda em cada servidor).
 - `ferramentas/relatorio.py` — roda os testes e gera `relatorios/AAAA-MM-DD.md` por IA.
-- `bezalel/` — aparência do Bezalel (index.html + styles.css + app.js), só visual com dados de demonstração; mesmo padrão do site do Asafe em preto e verde.
+- **Bezalel:** tudo o que é do Bezalel (aparência, prompt, ficha) fica no repositório `companynathanael/Bezalel`, não aqui.
 - `gather/` — apenas esqueleto; implementação completa planejada para a próxima etapa.

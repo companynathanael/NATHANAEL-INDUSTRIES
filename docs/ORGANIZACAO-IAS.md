@@ -83,6 +83,7 @@ Gather (APIs) → Fornalha (funde e prova) → Bezalel (molda a IA) → IA pront
 - **Diferença para o Gather:** o Gather dá ferramentas (APIs) às IAs; o Bezalel cria as IAs.
 - **Não faz:** testes e avaliação. Isso passou para a **Fornalha** (prova de fogo).
 - Será o motor que construirá o Horácio e o Miquéias.
+- Aparência e detalhes: repositório [`companynathanael/Bezalel`](https://github.com/companynathanael/Bezalel).
 
 ### Fornalha — 4º motor
 - **Status:** Conceito
