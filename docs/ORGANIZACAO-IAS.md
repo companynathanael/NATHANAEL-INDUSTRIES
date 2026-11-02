@@ -101,7 +101,7 @@ Gather (APIs) → Fornalha (funde e prova) → Bezalel (molda a IA) → IA pront
 - **Motores:** Asafe, Gather, Fornalha e Bezalel.
 - **Submotores:** 3 por motor · **Total: 12**.
 - Peças de **sustentação**: não tiram funções do motor; sustentam a diferença entre uma IA básica e um motor (pilares confirmados: Continuidade, Memória e Autonomia).
-- **Nomes temporários:** Asafe → Âncora, Anais, Arbítrio · Gather → Guardião, Gravador, Guia · Fornalha → Fole, Fichário, Faísca · Bezalel → Baluarte, Baú, Bússola.
+- **Nomes temporários:** Asafe → Âncora, Anais, Arbítrio · Gather → Guardião, Gravador, Guia · Fornalha → Fole, Fichário, **F-PLAYGROUND** (oficial) · Bezalel → Baluarte, Baú, Bússola.
 - Serão criados após os 4 motores, e antes do Horácio e do Miquéias.
 - Detalhes em [ROADMAP.md](ROADMAP.md).
 
