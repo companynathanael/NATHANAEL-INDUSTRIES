@@ -32,14 +32,45 @@ Cada unidade de eletronanologia envia seu estado ao Asafe pelo endpoint
   "info": { "na_rede_eletrica": false, "bateria_pct": 72, "autonomia_min": 95 } }
 ```
 
+## Decisões do Sr. Nathanael
+- **Autonomia:** ~**2 dias (48 h)** sem luz.
+- **Estrutura:** **3 a 4 caixas virtuais** de geradores (padrão: 4). Quando uma esvazia, a próxima assume.
+- **O que fica ligado:** **apenas o Asafe**. As outras IAs funcionam através dele.
+- **Orçamento:** **R$ 0**. Por isso a eletronanologia começa **virtual** (em software).
+
+## Versão virtual (já implementada)
+Código em `asafe/eletronanologia.py`, com rotas na API do Asafe:
+
+| Rota | O que faz |
+|---|---|
+| `GET /energia` | Estado das caixas: carga, autonomia restante, nível |
+| `POST /energia/queda` | Simula uma queda de luz |
+| `POST /energia/retorno` | Simula a volta da luz (as caixas recarregam) |
+| `POST /energia/avancar?horas=N` | Avança o tempo da simulação |
+
+Níveis: `normal` → `bateria` → `aviso` (≤25%) → `critico` (≤10%, salvar e desligar) → `desligado`.
+A cada mudança de nível, o Asafe **envia uma mensagem automática ao Sr. Nathanael**.
+
+Configuração: `ELETRO_CAIXAS` (padrão 4) e `ELETRO_CONSUMO_W` (consumo estimado, padrão 60 W).
+As caixas são dimensionadas automaticamente para cobrir 48 h.
+
+## Referência para a versão física (futuro)
+Energia necessária = consumo × 48 h. Exemplos:
+- Mini PC / notebook (~15–20 W): ~0,7–1 kWh → 4 caixas de ~250 Wh.
+- PC comum (~60 W): ~2,9 kWh → 4 caixas de ~720 Wh.
+- Servidor (~150 W): ~7,2 kWh → 4 caixas de ~1,8 kWh.
+
+> Dica de custo zero: um **notebook** já tem bateria própria (é uma "caixa" embutida),
+> e hospedar o Asafe em um **serviço de nuvem gratuito** elimina o problema da queda de
+> luz local, pois os data centers já têm geradores próprios.
+
 ## Fases
-1. **Protótipo:** um nobreak (UPS) com bateria alimentando servidor + roteador, para validar a ideia.
-2. **Monitoramento:** o Asafe lê o estado da bateria e envia alertas.
-3. **Desligamento inteligente:** o Asafe salva tudo e desliga com segurança antes da bateria zerar.
-4. **Expansão:** mais baterias, maior autonomia e, opcionalmente, recarga solar.
-5. **Miniaturização ("nano"):** linha de pesquisa para unidades menores e mais eficientes.
+1. **Virtual:** ✅ simulação das caixas, alertas e níveis dentro do Asafe.
+2. **Protótipo físico:** quando houver recursos, um nobreak (UPS) com bateria alimentando o servidor do Asafe + roteador.
+3. **Monitoramento real:** o Asafe lê o estado da bateria e envia alertas.
+4. **Desligamento inteligente:** o Asafe salva tudo e desliga com segurança antes da bateria zerar.
+5. **Expansão:** mais baterias, maior autonomia e, opcionalmente, recarga solar.
+6. **Miniaturização ("nano"):** linha de pesquisa para unidades menores e mais eficientes.
 
 ## Questões em aberto
-- Quanto tempo as IAs precisam continuar funcionando sem luz (30 min? 4 h? 1 dia?)?
-- Quais equipamentos ficarão ligados (para calcular o tamanho da bateria)?
-- Orçamento do primeiro protótipo.
+- Em que máquina o Asafe vai rodar (para trocar o consumo estimado de 60 W pelo real)?
