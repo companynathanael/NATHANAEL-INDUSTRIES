@@ -6,3 +6,4 @@ data,ia,meta,status,testes_ok,testes_falha,observacoes
 2026-11-02,Asafe,Painel ligado à API e criação de servidores (cadastro + máquina em nuvem),concluida,44,0,Provedores local e Oracle; ver docs/ASAFE.md e docs/SERVIDORES-ORACLE.md
 2026-11-02,Asafe,Tirar "criação de APIs" do Asafe (é função do Gather) no site e nos documentos,concluida,44,0,ORGANIZACAO-IAS.md e ASAFE.md
 2026-11-04,Gather,Gather completo,pendente,,,Remarcado de terça (03/11) para quarta (04/11) pelo Sr. Nathanael
+2026-11-02,Asafe,Site do Asafe: núcleos da Fornalha (laranja) e do Bezalel (verde) no fluxograma; no padrão do Gather,concluida,44,0,Linha de produção Gather → Fornalha → Bezalel; repositório companynathanael/Asafe
