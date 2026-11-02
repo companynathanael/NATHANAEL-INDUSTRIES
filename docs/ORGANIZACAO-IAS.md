@@ -1,7 +1,7 @@
 # NATHANAEL INDUSTRIES
 ## Organização de Inteligências Artificiais
 
-A estrutura atual da Nathanael Industries é dividida em duas categorias principais: **Auxiliares** e **Desenvolvedores**.
+A estrutura atual da Nathanael Industries é dividida em duas categorias principais: **Auxiliares** e **Motores**.
 
 ---
 
