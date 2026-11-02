@@ -44,7 +44,7 @@ NATHANAEL INDUSTRIES
 ├── Motor: FORNALHA
 │   ├── Fole      (Continuidade)
 │   ├── Fichário  (Memória)
-│   └── F-PLAYGROUND (Autonomia) ✅ nome oficial
+│   └── Faísca    (Autonomia)
 └── Motor: BEZALEL
     ├── Baluarte  (Continuidade)
     ├── Baú       (Memória)
@@ -72,13 +72,15 @@ Os 4 motores têm os mesmos 3 pilares, cada um na sua versão:
 |---|---|---|
 | **1. Continuidade** | Mantém a fundição e as provas rodando, retomando de onde parou após uma falha | Nenhuma IA em construção se perde: salva o progresso e retoma a criação |
 | **2. Memória** | Guarda o resultado de cada prova de fogo e de cada habilidade fundida, e aprende o que costuma falhar | Lembra como cada IA foi criada (receita, versões) e aprende com as criações anteriores |
-| **3. Autonomia** | **F-PLAYGROUND:** a arena das provas de fogo; decide sozinho quais provas aplicar e reprova o que não passar | Propõe melhorias e novas versões das IAs sem esperar pedido |
+| **3. Autonomia** | Decide sozinha quais provas aplicar e reprova o que não passar | Propõe melhorias e novas versões das IAs sem esperar pedido |
 
 ### Nomes temporários
 Nomes provisórios até o Sr. Nathanael definir os oficiais. Cada submotor começa
 com a inicial do seu motor: **A**safe, **G**ather, **F**ornalha, **B**ezalel.
 Nomes oficiais que não começam com a inicial levam o prefixo da letra do motor
-(ex.: **F-PLAYGROUND**, chamado apenas de "Playground").
+(ex.: F-NOME, chamado apenas pelo nome).
+
+> ⚠️ **Nome já em uso:** "Playground" pertence ao **Gather**. Não usar em submotores.
 
 | Código | Nome temporário | Motor | Pilar | Status |
 |---|---|---|---|---|
@@ -90,7 +92,7 @@ Nomes oficiais que não começam com a inicial levam o prefixo da letra do motor
 | GTH-A | **Guia** | Gather | Autonomia | ⚪ Não iniciado |
 | FRN-C | **Fole** | Fornalha | Continuidade | ⚪ Não iniciado |
 | FRN-M | **Fichário** | Fornalha | Memória | ⚪ Não iniciado |
-| FRN-A | **F-PLAYGROUND** ("Playground") ✅ oficial | Fornalha | Autonomia | ⚪ Não iniciado |
+| FRN-A | **Faísca** | Fornalha | Autonomia | ⚪ Não iniciado |
 | BZL-C | **Baluarte** | Bezalel | Continuidade | ⚪ Não iniciado |
 | BZL-M | **Baú** | Bezalel | Memória | ⚪ Não iniciado |
 | BZL-A | **Bússola** | Bezalel | Autonomia | ⚪ Não iniciado |
@@ -99,6 +101,6 @@ As 6 funções principais de cada motor continuam com o próprio motor. Os pilar
 apenas as **sustentam**.
 
 ### Questões em aberto
-- Nomes oficiais e versões dos 11 submotores restantes (1 de 12 definido: F-PLAYGROUND).
+- Nomes oficiais e versões dos 12 submotores.
 - Datas de produção (cada submotor só é produzido depois do seu motor estar completo).
 - Os submotores conversam só com a IA principal ou também entre si?

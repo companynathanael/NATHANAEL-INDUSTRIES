@@ -26,7 +26,7 @@ Detalhes: @metas/COMO-USAR.md
 - **Motores (4):** Asafe, Gather, **Bezalel** (3º: criador de IAs; preto e verde; logo bigorna) e **Fornalha** (4º: transformação — fundição de habilidades, prova de fogo, desempenho; preto e laranja; logo fornalha).
 - Linha de produção: Gather (APIs) → Fornalha (funde e prova) → Bezalel (molda a IA); Asafe sustenta tudo.
 - Logos e cores: @identidade/IDENTIDADE.md
-- **Submotores:** 3 por motor · total 12. São peças de **sustentação**: NÃO tiram funções do motor; sustentam a diferença entre IA básica e motor. Pilares confirmados: Continuidade, Memória, Autonomia. Nomes temporários: Asafe → Âncora, Anais, Arbítrio; Gather → Guardião, Gravador, Guia; Fornalha → Fole, Fichário, F-PLAYGROUND (NOME OFICIAL, chamado "Playground"; Autonomia da Fornalha); Bezalel → Baluarte, Baú, Bússola. Ainda não produzidos.
+- **Submotores:** 3 por motor · total 12. São peças de **sustentação**: NÃO tiram funções do motor; sustentam a diferença entre IA básica e motor. Pilares confirmados: Continuidade, Memória, Autonomia. Nomes temporários: Asafe → Âncora, Anais, Arbítrio; Gather → Guardião, Gravador, Guia; Fornalha → Fole, Fichário, Faísca; Bezalel → Baluarte, Baú, Bússola. Ainda não produzidos. ⚠️ "Playground" já é do Gather: não usar como nome de submotor.
 
 ## Código
 - `asafe/` — API do Asafe (Python/FastAPI + SQLite). Testes em `tests/` (`python -m pytest -q`).

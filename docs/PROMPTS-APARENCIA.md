@@ -27,7 +27,7 @@ FUNÇÕES (cada uma vira uma tela/aba)
 2. Fundição de habilidades: une várias APIs do Gather em uma habilidade pronta. Mostrar as APIs de entrada → habilidade de saída (ex.: cotação + gráfico + alerta → "Acompanhar ação").
 3. Prova de fogo: fila de testes de habilidades e IAs novas sob pressão (situações difíceis, erros, sobrecarga), com status Em prova / Aprovado / Reprovado e o motivo.
 4. Desempenho: velocidade, eficiência e consumo do que sai da fornalha; destaque para o que foi reprovado por lentidão ou desperdício.
-5. Submotores (ainda não produzidos, mostrar como "em breve"): Fole (Continuidade), Fichário (Memória), F-PLAYGROUND, chamado "Playground" (Autonomia: a arena das provas de fogo).
+5. Submotores (ainda não produzidos, mostrar como "em breve"): Fole (Continuidade), Fichário (Memória), Faísca (Autonomia).
 
 NÃO FAZ: energia e infraestrutura (isso é do Asafe); criar IAs (isso é do Bezalel).
 Textos em português.
