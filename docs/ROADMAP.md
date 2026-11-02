@@ -13,13 +13,17 @@ A criação segue esta ordem. Uma fase só começa quando a anterior estiver pro
 
 ## Submotores
 
-**O que são:** os "subs" do Asafe e do Gather. Cada submotor é uma parte menor e
-especializada que trabalha **subordinada** à sua IA principal, executando uma
-função específica dela.
+**O que são:** peças de **sustentação** do Asafe e do Gather. Os submotores
+**não tiram nenhuma função** do seu motor. O Asafe e o Gather continuam com todas
+as suas responsabilidades principais. Os submotores são o que **sustenta a
+diferença entre uma IA básica e um motor**.
 
-**Por que vêm antes do Horácio e do Miquéias:** os auxiliares vão depender da
-infraestrutura (Asafe) e das APIs (Gather) já funcionando por completo, e são os
-submotores que completam essa base.
+> Uma IA básica executa funções. Um **motor** executa funções **e** se mantém
+> funcionando, lembra do que aconteceu e age sozinho. Os submotores são essas
+> três sustentações.
+
+**Por que vêm antes do Horácio e do Miquéias:** os auxiliares vão depender de
+motores completos e estáveis, e são os submotores que tornam o Asafe e o Gather motores.
 
 ### Estrutura definida
 
@@ -41,17 +45,17 @@ NATHANAEL INDUSTRIES
 | Gather | 3 |
 | **Total** | **6** |
 
-### Sugestão de divisão (a confirmar pelo Sr. Nathanael)
-Cada submotor assume 2 das 6 responsabilidades do seu motor.
+### Sugestão: os 3 pilares de sustentação (a confirmar pelo Sr. Nathanael)
+Os dois motores têm os mesmos 3 pilares, cada um na sua versão:
 
-| Submotor | Responsabilidades |
-|---|---|
-| Asafe A1 — Servidores e energia | Servidores; eletronanologia |
-| Asafe A2 — Dados e APIs | Armazenamento de dados; criação de APIs |
-| Asafe A3 — Vigilância e comunicação | Monitoramento dos agentes; permissões e conexão entre IAs |
-| Gather G1 — Registro e integração | Registro de APIs; integração de serviços |
-| Gather G2 — Credenciais e monitoramento | Credenciais de acesso; disponibilidade e desempenho |
-| Gather G3 — Seleção e compatibilidade | Escolha de APIs por necessidade; compatibilidade entre serviços |
+| Pilar | O que sustenta | Submotor do Asafe | Submotor do Gather |
+|---|---|---|---|
+| **1. Continuidade** | O motor nunca para | Mantém o Asafe ligado: eletronanologia, backups, recuperação após falhas | Quando uma API cai, troca na hora por outra equivalente |
+| **2. Memória** | O motor lembra e aprende | Guarda o histórico das IAs e aprende padrões (ex.: horários de mais uso) | Aprende quais APIs são mais rápidas e confiáveis |
+| **3. Autonomia** | O motor age sozinho | Detecta problemas e corrige sem esperar o Sr. Nathanael | Encontra e adapta novas APIs sem precisar de configuração manual |
+
+As 6 funções principais de cada motor continuam com o próprio motor. Os pilares
+apenas as **sustentam**.
 
 ### Questões em aberto
 - Nome, versão e função de cada submotor.
