@@ -36,6 +36,7 @@ IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecno
 |---|---|---|---|
 | Asafe | 0.1 | Recriação | Desenvolvedor de infraestrutura inteligente |
 | Gather | 0.1 | Planejamento | Gerenciadora e orquestradora de APIs |
+| Bezalel | — | Conceito | Criador de IAs |
 
 ### Asafe — 0.1
 - **Status:** Recriação
@@ -58,6 +59,21 @@ IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecno
   - Monitoramento de disponibilidade e desempenho.
   - Seleção de APIs conforme a necessidade das IAs.
   - Compatibilidade entre diferentes serviços.
+
+### Bezalel — 3º motor
+- **Status:** Conceito
+- **Classificação:** Criador de IAs.
+- **Cores:** preto e verde.
+- **Origem do nome:** Bezalel, o artesão escolhido para construir o tabernáculo (Êxodo 31).
+- **Responsável por (proposta):**
+  - Definição de novas IAs (propósito, personalidade, regras).
+  - Montagem das IAs, unindo a estrutura do Asafe e as APIs do Gather.
+  - Testes e avaliação antes da liberação.
+  - Controle de versões e melhorias.
+  - Aposentadoria de IAs antigas.
+  - Registro das IAs criadas no Asafe.
+- **Diferença para o Gather:** o Gather dá ferramentas (APIs) às IAs; o Bezalel cria as IAs.
+- Será o motor que construirá o Horácio e o Miquéias.
 
 ### Submotores (subs do Asafe e do Gather)
 - **Status:** Estrutura definida

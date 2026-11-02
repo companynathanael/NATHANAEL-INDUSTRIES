@@ -6,8 +6,9 @@ A criação segue esta ordem. Uma fase só começa quando a anterior estiver pro
 |---|---|---|
 | 1 | **Asafe** (infraestrutura inteligente) | 🟡 50% — eletronanologia pendente (terça, 03/11) |
 | 2 | **Gather** (orquestração de APIs) | 🟡 Esqueleto — completo previsto para quarta (04/11) |
-| 3 | **Submotores**: 3 do Asafe + 3 do Gather = 6 | ⚪ Pilares confirmados; nomes temporários |
-| 4 | **Horácio** e **Miquéias** (auxiliares) | ⚪ Aguardando fases 1–3 |
+| 3 | **Bezalel** (3º motor: criador de IAs) | ⚪ Conceito; nome e cores (preto e verde) definidos |
+| 4 | **Submotores**: 3 do Asafe + 3 do Gather = 6 (Bezalel: a definir) | ⚪ Pilares confirmados; nomes temporários |
+| 5 | **Horácio** e **Miquéias** (auxiliares), construídos pelo Bezalel | ⚪ Aguardando fases 1–4 |
 
 ---
 
@@ -74,3 +75,5 @@ apenas as **sustentam**.
 - Nomes oficiais e versões dos 6 submotores.
 - Datas de produção (não serão produzidos antes de Asafe e Gather estarem completos).
 - Os submotores conversam só com a IA principal ou também entre si?
+- O Bezalel terá 3 submotores (Continuidade, Memória, Autonomia), totalizando 9?
+- Posição do Bezalel na ordem: antes ou depois dos submotores do Asafe e do Gather?
