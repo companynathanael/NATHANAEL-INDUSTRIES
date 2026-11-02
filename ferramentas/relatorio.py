@@ -19,6 +19,8 @@ RAIZ = Path(__file__).resolve().parent.parent
 IA_POR_ARQUIVO = {
     "test_asafe": "Asafe",
     "test_eletronanologia": "Asafe",
+    "test_armazenamento_servidores": "Asafe",
+    "test_criacao_servidores": "Asafe",
     "test_gather": "Gather",
 }
 

@@ -3,3 +3,6 @@ data,ia,meta,status,testes_ok,testes_falha,observacoes
 2026-11-02,Gather,Criar o esqueleto (6 responsabilidades),concluida,0,0,Apenas estrutura; sem testes ainda
 2026-11-03,Gather,Gather completo,pendente,,,
 2026-11-04,Asafe,Eletronanologia: 3 a 4 caixas; 48 h de autonomia; alertas automáticos,pendente,,,Rascunho virtual já existe em asafe/eletronanologia.py (3 testes ok) e pode ser usado como base; ver docs/ELETRONANOLOGIA.md
+2026-11-02,Asafe,Armazenamento (arquivos; cota; backups) e Servidores (métricas; alertas; comandos; sentinela) completos,concluida,26,0,Ver docs/ASAFE.md
+2026-11-02,Asafe,Painel ligado à API e criação de servidores (cadastro + máquina em nuvem),concluida,44,0,Provedores local e Oracle; ver docs/ASAFE.md e docs/SERVIDORES-ORACLE.md
+2026-11-02,Asafe,Tirar "criação de APIs" do Asafe (é função do Gather) no site e nos documentos,concluida,44,0,ORGANIZACAO-IAS.md e ASAFE.md

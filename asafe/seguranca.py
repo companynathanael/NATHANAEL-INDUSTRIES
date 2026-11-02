@@ -13,6 +13,7 @@ PERMISSOES = {
     "dados:escrever",
     "auditoria:ler",
     "servidores:gerenciar",
+    "servidores:sinal",     # só enviar sinal/métricas e responder comandos (para o próprio servidor)
 }
 
 NOME_ADMIN = "nathanael"
@@ -32,3 +33,7 @@ def tokens_iguais(a: str, b: str) -> bool:
 
 def tem_permissao(permissoes: set[str], necessaria: str) -> bool:
     return "*" in permissoes or necessaria in permissoes
+
+
+def tem_alguma(permissoes: set[str], *necessarias: str) -> bool:
+    return any(tem_permissao(permissoes, n) for n in necessarias)

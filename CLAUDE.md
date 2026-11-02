@@ -27,5 +27,6 @@ Detalhes: @metas/COMO-USAR.md
 
 ## Código
 - `asafe/` — API do Asafe (Python/FastAPI + SQLite). Testes em `tests/` (`python -m pytest -q`).
+  - `armazenamento.py` (arquivos, cota, backups), `servidores.py` (métricas, alertas, comandos), `backup.py` (CLI), `sentinela.py` (roda em cada servidor).
 - `ferramentas/relatorio.py` — roda os testes e gera `relatorios/AAAA-MM-DD.md` por IA.
 - `gather/` — apenas esqueleto; implementação completa planejada para a próxima etapa.
