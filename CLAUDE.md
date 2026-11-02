@@ -14,4 +14,5 @@ Responda ao usuário em português.
 
 ## Código
 - `asafe/` — API do Asafe (Python/FastAPI + SQLite). Testes em `tests/` (`python -m pytest -q`).
+  - `armazenamento.py` (arquivos, cota, backups), `servidores.py` (métricas, alertas, comandos), `backup.py` (CLI), `sentinela.py` (roda em cada servidor).
 - `gather/` — apenas esqueleto; implementação completa planejada para a próxima etapa.

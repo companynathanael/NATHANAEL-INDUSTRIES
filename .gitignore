@@ -3,3 +3,6 @@ __pycache__/
 *.db
 .pytest_cache/
 .venv/
+asafe_arquivos/
+asafe_backups/
+*.antes-restauracao-*
