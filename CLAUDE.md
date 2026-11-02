@@ -15,6 +15,7 @@ Detalhes: @metas/COMO-USAR.md
 - @docs/ORGANIZACAO-IAS.md — Organização das IAs (Auxiliares: Horácio, Miquéias; Motores: Asafe, Gather, Bezalel, Fornalha).
 - @docs/ROADMAP.md — **Ordem de criação (confirmada):** Asafe → Gather → Fornalha → Bezalel → Submotores → Horácio e Miquéias (construídos pelo Bezalel).
 - @docs/ASAFE.md — Progresso do Asafe (meta atual: 50%) e como rodar.
+- @docs/PROMPTS-APARENCIA.md — Prompts para gerar a aparência da Fornalha e do Bezalel.
 - @docs/ELETRONANOLOGIA.md — Tecnologia-símbolo do Asafe: armazena eletricidade para as IAs seguirem funcionando quando a luz cai. Em pesquisa.
 
 ## Resumo rápido
