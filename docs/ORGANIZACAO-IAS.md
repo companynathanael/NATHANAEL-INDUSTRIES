@@ -63,7 +63,8 @@ IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecno
 - **Status:** Estrutura definida
 - **Motores:** Asafe e Gather.
 - **Submotores:** Asafe — 3 · Gather — 3 · **Total: 6**.
-- Peças de **sustentação**: não tiram funções do motor; sustentam a diferença entre uma IA básica e um motor (sugestão: Continuidade, Memória e Autonomia).
+- Peças de **sustentação**: não tiram funções do motor; sustentam a diferença entre uma IA básica e um motor (pilares confirmados: Continuidade, Memória e Autonomia).
+- **Nomes temporários:** Asafe → Âncora, Anais, Arbítrio · Gather → Guardião, Gravador, Guia.
 - Serão criados após o Asafe e o Gather, e antes do Horácio e do Miquéias.
 - Detalhes em [ROADMAP.md](ROADMAP.md).
 

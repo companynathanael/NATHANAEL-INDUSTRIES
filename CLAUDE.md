@@ -23,7 +23,7 @@ Detalhes: @metas/COMO-USAR.md
 
 ## Estrutura
 - **Motores:** Asafe e Gather.
-- **Submotores:** Asafe 3 · Gather 3 · total 6. São peças de **sustentação**: NÃO tiram funções do motor; sustentam a diferença entre IA básica e motor. Sugestão de pilares (a confirmar): Continuidade, Memória, Autonomia.
+- **Submotores:** Asafe 3 · Gather 3 · total 6. São peças de **sustentação**: NÃO tiram funções do motor; sustentam a diferença entre IA básica e motor. Pilares confirmados: Continuidade, Memória, Autonomia. Nomes temporários: Asafe → Âncora, Anais, Arbítrio; Gather → Guardião, Gravador, Guia. Ainda não produzidos.
 
 ## Código
 - `asafe/` — API do Asafe (Python/FastAPI + SQLite). Testes em `tests/` (`python -m pytest -q`).
