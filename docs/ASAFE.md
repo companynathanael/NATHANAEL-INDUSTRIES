@@ -31,7 +31,7 @@ O token de administrador é o do Sr. Nathanael (acesso total). Cada IA recebe se
 | 4 | Monitoramento das ações dos agentes | ✅ Base pronta | Auditoria automática de toda requisição (inclusive as negadas) |
 | 5 | Armazenamento de dados | ✅ Base pronta | Dados e **arquivos** por IA (isolados), limite por arquivo e **cota** por IA, **backups** manuais e automáticos com retenção, **restauração** |
 | 6 | Servidores | ✅ Base pronta | Cadastro, **métricas** (CPU/memória/disco) com histórico, estados online/offline/manutenção, **alertas** automáticos (caiu, voltou, limite passado) com aviso ao Sr. Nathanael, **comandos remotos** e **sentinela** |
-| 7 | Eletronanologia (energia de reserva quando a luz cai) | 🟡 Virtual pronta | 4 caixas virtuais, 48 h, alertas automáticos. Ver [ELETRONANOLOGIA.md](ELETRONANOLOGIA.md) |
+| 7 | Eletronanologia (energia de reserva quando a luz cai) | ⏳ Pendente (meta de quarta, 04/11) | Rascunho virtual: 4 caixas, 48 h, alertas. Ver [ELETRONANOLOGIA.md](ELETRONANOLOGIA.md) |
 
 ## Próxima metade (50% → 100%)
 - [ ] Mensagens em tempo real (WebSocket) em vez de só consulta.

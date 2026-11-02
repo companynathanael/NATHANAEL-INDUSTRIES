@@ -59,4 +59,14 @@ IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecno
   - Seleção de APIs conforme a necessidade das IAs.
   - Compatibilidade entre diferentes serviços.
 
+### Submotores (subs do Asafe e do Gather)
+- **Status:** Conceito
+- Partes especializadas subordinadas ao Asafe e ao Gather. Serão criadas após o Asafe e o Gather, e antes do Horácio e do Miquéias.
+- Detalhes em [ROADMAP.md](ROADMAP.md).
+
 > Outras IAs desenvolvedoras serão criadas futuramente.
+
+---
+
+## Ordem de criação
+1. Asafe → 2. Gather → 3. Submotores (do Asafe e do Gather) → 4. Horácio e Miquéias
