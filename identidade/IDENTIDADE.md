@@ -2,8 +2,8 @@
 
 | Nome | Logo | Cores | Símbolo | Categoria | Status |
 |---|---|---|---|---|---|
-| **Bezalel** | <img src="logos/bezalel.jpg" width="200"> | Preto e verde | Bigorna | Desenvolvedores (3º motor, criador de IAs) | Conceito |
-| **Fornalha** | <img src="logos/fornalha.jpg" width="200"> | Preto e laranja | Fornalha com chama | ⚠️ Em avaliação | ⚠️ Em avaliação |
+| **Bezalel** | <img src="logos/bezalel.jpg" width="200"> | Preto e verde | Bigorna | Motores (3º motor, criador de IAs) | Conceito |
+| **Fornalha** | <img src="logos/fornalha.jpg" width="200"> | Preto e laranja | Fornalha com chama | Motores (4º motor, transformação) | Conceito |
 
 ## Bezalel
 - Arquivo: [`logos/bezalel.jpg`](logos/bezalel.jpg)
@@ -14,6 +14,6 @@
 - Arquivo: [`logos/fornalha.jpg`](logos/fornalha.jpg)
 - Fornalha com chama, branca sobre fundo preto.
 - Cores do tema: **preto e laranja**. A versão enviada está em preto e branco.
-- **Categoria e atividade ainda em avaliação pelo Sr. Nathanael.** Não atribuir funções até haver decisão.
+- **4º motor, de transformação:** fundição de habilidades, prova de fogo e desempenho.
 
 > Bigorna (Bezalel) e fornalha formam o mesmo conjunto de uma oficina de ferreiro.

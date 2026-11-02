@@ -28,15 +28,23 @@ IAs destinadas a auxiliar o Sr. Nathanael em suas atividades, tarefas e decisõe
 
 ---
 
-## 02. Categoria: DESENVOLVEDORES
+## 02. Categoria: MOTORES
 
 IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecnológica da Nathanael Industries.
+(Antes chamada "Desenvolvedores".)
+
+**Linha de produção dos motores:**
+```
+Gather (APIs) → Fornalha (funde e prova) → Bezalel (molda a IA) → IA pronta
+            Asafe sustenta tudo (infraestrutura)
+```
 
 | IA | Versão | Status | Classificação |
 |---|---|---|---|
 | Asafe | 0.1 | Recriação | Desenvolvedor de infraestrutura inteligente |
 | Gather | 0.1 | Planejamento | Gerenciadora e orquestradora de APIs |
 | Bezalel | — | Conceito | Criador de IAs |
+| Fornalha | — | Conceito | Motor de transformação |
 
 ### Asafe — 0.1
 - **Status:** Recriação
@@ -69,12 +77,24 @@ IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecno
 - **Responsável por (proposta):**
   - Definição de novas IAs (propósito, personalidade, regras).
   - Montagem das IAs, unindo a estrutura do Asafe e as APIs do Gather.
-  - Testes e avaliação antes da liberação.
   - Controle de versões e melhorias.
   - Aposentadoria de IAs antigas.
   - Registro das IAs criadas no Asafe.
 - **Diferença para o Gather:** o Gather dá ferramentas (APIs) às IAs; o Bezalel cria as IAs.
+- **Não faz:** testes e avaliação. Isso passou para a **Fornalha** (prova de fogo).
 - Será o motor que construirá o Horácio e o Miquéias.
+
+### Fornalha — 4º motor
+- **Status:** Conceito
+- **Classificação:** Motor de transformação.
+- **Cores:** preto e laranja.
+- **Logo:** fornalha com chama ([identidade/logos/fornalha.jpg](../identidade/logos/fornalha.jpg)).
+- **Ideia central:** numa fornalha, o metal derrete, se funde e é provado no fogo.
+- **Responsável por:**
+  - **Fundição de habilidades:** funde várias APIs do Gather em uma habilidade pronta (ex.: cotação + gráfico + alerta → "acompanhar ação").
+  - **Prova de fogo:** testa cada habilidade e cada IA nova sob pressão (situações difíceis, erros, sobrecarga) antes da liberação.
+  - **Desempenho:** mede velocidade e eficiência do que sai da fornalha e reprova o que for lento ou desperdiçar recursos.
+- **Não faz:** energia e infraestrutura (são do Asafe).
 
 ### Submotores (subs do Asafe e do Gather)
 - **Status:** Estrutura definida
@@ -89,14 +109,5 @@ IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecno
 
 ---
 
-## Em avaliação
-
-### Fornalha
-- **Status:** ⚠️ Em avaliação. Categoria e atividade ainda não definidas.
-- **Cores:** preto e laranja.
-- **Logo:** fornalha com chama ([identidade/logos/fornalha.jpg](../identidade/logos/fornalha.jpg)).
-
----
-
 ## Ordem de criação
-1. Asafe → 2. Gather → 3. Submotores (do Asafe e do Gather) → 4. Horácio e Miquéias
+1. Asafe → 2. Gather → 3. Fornalha → 4. Bezalel → 5. Submotores → 6. Horácio e Miquéias (construídos pelo Bezalel)

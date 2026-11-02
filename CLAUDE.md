@@ -12,18 +12,18 @@ Responda ao usuário em português.
 Detalhes: @metas/COMO-USAR.md
 
 ## Documentos de referência (sempre consultar)
-- @docs/ORGANIZACAO-IAS.md — Organização das IAs (Auxiliares: Horácio, Miquéias; Desenvolvedores: Asafe, Gather).
-- @docs/ROADMAP.md — **Ordem de criação:** Asafe → Gather → Bezalel → Submotores → Horácio e Miquéias (construídos pelo Bezalel).
+- @docs/ORGANIZACAO-IAS.md — Organização das IAs (Auxiliares: Horácio, Miquéias; Motores: Asafe, Gather, Bezalel, Fornalha).
+- @docs/ROADMAP.md — **Ordem de criação:** Asafe → Gather → Fornalha → Bezalel → Submotores → Horácio e Miquéias (construídos pelo Bezalel).
 - @docs/ASAFE.md — Progresso do Asafe (meta atual: 50%) e como rodar.
 - @docs/ELETRONANOLOGIA.md — Tecnologia-símbolo do Asafe: armazena eletricidade para as IAs seguirem funcionando quando a luz cai. Em pesquisa.
 
 ## Resumo rápido
 - **Auxiliares:** Horácio HoV 1.1 (assistente pessoal do Sr. Nathanael, em desenvolvimento); Miquéias JpG 1.0 (tarefas, cálculos e trading, em desenvolvimento).
-- **Desenvolvedores:** Asafe 0.1 (infraestrutura inteligente, em recriação); Gather 0.1 (orquestração de APIs, em planejamento).
+- **Motores** (antes "Desenvolvedores"): Asafe 0.1 (infraestrutura inteligente, em recriação); Gather 0.1 (orquestração de APIs, em planejamento); Bezalel (criador de IAs, conceito); Fornalha (transformação, conceito).
 
 ## Estrutura
-- **Motores:** Asafe, Gather e **Bezalel** (3º motor, criador de IAs; cores preto e verde; logo: bigorna; conceito).
-- **Fornalha:** cores preto e laranja; logo: fornalha com chama. ⚠️ Categoria e atividade EM AVALIAÇÃO; não atribuir funções.
+- **Motores (4):** Asafe, Gather, **Bezalel** (3º: criador de IAs; preto e verde; logo bigorna) e **Fornalha** (4º: transformação — fundição de habilidades, prova de fogo, desempenho; preto e laranja; logo fornalha).
+- Linha de produção: Gather (APIs) → Fornalha (funde e prova) → Bezalel (molda a IA); Asafe sustenta tudo.
 - Logos e cores: @identidade/IDENTIDADE.md
 - **Submotores:** Asafe 3 · Gather 3 · total 6. São peças de **sustentação**: NÃO tiram funções do motor; sustentam a diferença entre IA básica e motor. Pilares confirmados: Continuidade, Memória, Autonomia. Nomes temporários: Asafe → Âncora, Anais, Arbítrio; Gather → Guardião, Gravador, Guia. Ainda não produzidos.
 
