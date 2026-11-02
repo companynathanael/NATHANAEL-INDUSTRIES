@@ -6,7 +6,7 @@ A criação segue esta ordem. Uma fase só começa quando a anterior estiver pro
 |---|---|---|
 | 1 | **Asafe** (infraestrutura inteligente) | 🟡 50% — eletronanologia pendente (terça, 03/11) |
 | 2 | **Gather** (orquestração de APIs) | 🟡 Esqueleto — completo previsto para quarta (04/11) |
-| 3 | **Fornalha** (4º motor: transformação — fundição, prova de fogo, desempenho) | ⚪ Conceito; cores preto e laranja |
+| 3 | **Fornalha** (4º motor: transformação — fundição, prova de fogo, desempenho) | ⚪ Conceito; cores preto e laranja; **aparência pronta** (painel demo no repositório `companynathanael/Fornalha`) |
 | 4 | **Bezalel** (3º motor: criador de IAs) | ⚪ Conceito; cores preto e verde |
 | 5 | **Submotores**: 3 por motor × 4 motores = **12** | ⚪ Pilares confirmados; nomes temporários |
 | 6 | **Horácio** e **Miquéias** (auxiliares), construídos pelo Bezalel | ⚪ Aguardando fases 1–5 |
