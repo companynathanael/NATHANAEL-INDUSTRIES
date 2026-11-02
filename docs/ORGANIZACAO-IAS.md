@@ -60,7 +60,9 @@ IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecno
   - Compatibilidade entre diferentes serviços.
 
 ### Submotores (subs do Asafe e do Gather)
-- **Status:** Conceito
+- **Status:** Estrutura definida
+- **Motores:** Asafe e Gather.
+- **Submotores:** Asafe — 3 · Gather — 3 · **Total: 6**.
 - Partes especializadas subordinadas ao Asafe e ao Gather. Serão criadas após o Asafe e o Gather, e antes do Horácio e do Miquéias.
 - Detalhes em [ROADMAP.md](ROADMAP.md).
 
