@@ -13,6 +13,7 @@ Detalhes: @metas/COMO-USAR.md
 
 ## Documentos de referência (sempre consultar)
 - @docs/ORGANIZACAO-IAS.md — Organização das IAs (Auxiliares: Horácio, Miquéias; Desenvolvedores: Asafe, Gather).
+- @docs/ROADMAP.md — **Ordem de criação:** Asafe → Gather → Submotores (subs do Asafe e do Gather) → Horácio e Miquéias.
 - @docs/ASAFE.md — Progresso do Asafe (meta atual: 50%) e como rodar.
 - @docs/ELETRONANOLOGIA.md — Tecnologia-símbolo do Asafe: armazena eletricidade para as IAs seguirem funcionando quando a luz cai. Em pesquisa.
 
