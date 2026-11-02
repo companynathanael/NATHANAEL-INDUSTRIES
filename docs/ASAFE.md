@@ -41,7 +41,7 @@ O token de administrador é o do Sr. Nathanael (acesso total). Cada IA recebe se
 | 3 | Monitoramento das ações dos agentes | ✅ Base pronta | Auditoria automática de toda requisição (inclusive as negadas) |
 | 4 | Armazenamento de dados | ✅ Base pronta | Dados e **arquivos** por IA (isolados), limite por arquivo e **cota** por IA, **backups** manuais e automáticos com retenção, **restauração** |
 | 5 | Servidores | ✅ Base pronta | Cadastro, **métricas** (CPU/memória/disco) com histórico, estados online/offline/manutenção, **alertas** automáticos (caiu, voltou, limite passado) com aviso ao Sr. Nathanael, **comandos remotos** e **sentinela** |
-| 6 | Eletronanologia (energia de reserva quando a luz cai) | ⏳ Pendente (meta de quarta, 04/11) | Rascunho virtual: 4 caixas, 48 h, alertas. Ver [ELETRONANOLOGIA.md](ELETRONANOLOGIA.md) |
+| 6 | Eletronanologia (energia de reserva quando a luz cai) | ⏳ Pendente (meta de terça, 03/11) | Rascunho virtual: 4 caixas, 48 h, alertas. Ver [ELETRONANOLOGIA.md](ELETRONANOLOGIA.md) |
 
 > **Criação de APIs não é função do Asafe**: é do **Gather**, que cria e gerencia as próprias APIs.
 > O Asafe só tem a sua própria API (a porta de entrada usada pelas IAs e pelo painel, com documentação em `/docs`).
