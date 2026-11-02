@@ -6,33 +6,37 @@ A criação segue esta ordem. Uma fase só começa quando a anterior estiver pro
 |---|---|---|
 | 1 | **Asafe** (infraestrutura inteligente) | 🟡 50% — eletronanologia pendente (04/11) |
 | 2 | **Gather** (orquestração de APIs) | 🟡 Esqueleto — completo previsto para 03/11 |
-| 3 | **Submotores**: 3 do Asafe + 3 do Gather = 6 | ⚪ Estrutura definida |
+| 3 | **Submotores**: 3 do Asafe + 3 do Gather = 6 | ⚪ Pilares confirmados; nomes temporários |
 | 4 | **Horácio** e **Miquéias** (auxiliares) | ⚪ Aguardando fases 1–3 |
 
 ---
 
 ## Submotores
 
-**O que são:** os "subs" do Asafe e do Gather. Cada submotor é uma parte menor e
-especializada que trabalha **subordinada** à sua IA principal, executando uma
-função específica dela.
+**O que são:** peças de **sustentação** do Asafe e do Gather. Os submotores
+**não tiram nenhuma função** do seu motor. O Asafe e o Gather continuam com todas
+as suas responsabilidades principais. Os submotores são o que **sustenta a
+diferença entre uma IA básica e um motor**.
 
-**Por que vêm antes do Horácio e do Miquéias:** os auxiliares vão depender da
-infraestrutura (Asafe) e das APIs (Gather) já funcionando por completo, e são os
-submotores que completam essa base.
+> Uma IA básica executa funções. Um **motor** executa funções **e** se mantém
+> funcionando, lembra do que aconteceu e age sozinho. Os submotores são essas
+> três sustentações.
+
+**Por que vêm antes do Horácio e do Miquéias:** os auxiliares vão depender de
+motores completos e estáveis, e são os submotores que tornam o Asafe e o Gather motores.
 
 ### Estrutura definida
 
 ```
 NATHANAEL INDUSTRIES
 ├── Motor: ASAFE
-│   ├── Submotor A1
-│   ├── Submotor A2
-│   └── Submotor A3
+│   ├── Âncora    (Continuidade)
+│   ├── Anais     (Memória)
+│   └── Arbítrio  (Autonomia)
 └── Motor: GATHER
-    ├── Submotor G1
-    ├── Submotor G2
-    └── Submotor G3
+    ├── Guardião  (Continuidade)
+    ├── Gravador  (Memória)
+    └── Guia      (Autonomia)
 ```
 
 | Motor | Submotores |
@@ -41,18 +45,32 @@ NATHANAEL INDUSTRIES
 | Gather | 3 |
 | **Total** | **6** |
 
-### Sugestão de divisão (a confirmar pelo Sr. Nathanael)
-Cada submotor assume 2 das 6 responsabilidades do seu motor.
+### Os 3 pilares de sustentação (✅ confirmados pelo Sr. Nathanael)
+Os dois motores têm os mesmos 3 pilares, cada um na sua versão:
 
-| Submotor | Responsabilidades |
-|---|---|
-| Asafe A1 — Servidores e energia | Servidores; eletronanologia |
-| Asafe A2 — Dados e APIs | Armazenamento de dados; criação de APIs |
-| Asafe A3 — Vigilância e comunicação | Monitoramento dos agentes; permissões e conexão entre IAs |
-| Gather G1 — Registro e integração | Registro de APIs; integração de serviços |
-| Gather G2 — Credenciais e monitoramento | Credenciais de acesso; disponibilidade e desempenho |
-| Gather G3 — Seleção e compatibilidade | Escolha de APIs por necessidade; compatibilidade entre serviços |
+| Pilar | O que sustenta | Submotor do Asafe | Submotor do Gather |
+|---|---|---|---|
+| **1. Continuidade** | O motor nunca para | Mantém o Asafe ligado: eletronanologia, backups, recuperação após falhas | Quando uma API cai, troca na hora por outra equivalente |
+| **2. Memória** | O motor lembra e aprende | Guarda o histórico das IAs e aprende padrões (ex.: horários de mais uso) | Aprende quais APIs são mais rápidas e confiáveis |
+| **3. Autonomia** | O motor age sozinho | Detecta problemas e corrige sem esperar o Sr. Nathanael | Encontra e adapta novas APIs sem precisar de configuração manual |
+
+### Nomes temporários
+Nomes provisórios até o Sr. Nathanael definir os oficiais. Os submotores do Asafe
+começam com **A** e os do Gather com **G**.
+
+| Código | Nome temporário | Motor | Pilar | Status |
+|---|---|---|---|---|
+| ASF-C | **Âncora** | Asafe | Continuidade | ⚪ Não iniciado |
+| ASF-M | **Anais** | Asafe | Memória | ⚪ Não iniciado |
+| ASF-A | **Arbítrio** | Asafe | Autonomia | ⚪ Não iniciado |
+| GTH-C | **Guardião** | Gather | Continuidade | ⚪ Não iniciado |
+| GTH-M | **Gravador** | Gather | Memória | ⚪ Não iniciado |
+| GTH-A | **Guia** | Gather | Autonomia | ⚪ Não iniciado |
+
+As 6 funções principais de cada motor continuam com o próprio motor. Os pilares
+apenas as **sustentam**.
 
 ### Questões em aberto
-- Nome, versão e função de cada submotor.
+- Nomes oficiais e versões dos 6 submotores.
+- Datas de produção (não serão produzidos antes de Asafe e Gather estarem completos).
 - Os submotores conversam só com a IA principal ou também entre si?
