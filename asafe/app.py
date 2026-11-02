@@ -31,6 +31,7 @@ from .armazenamento import (
     listar_backups,
 )
 from .db import Banco
+from .eletronanologia import MENSAGENS, SistemaEletro
 from .modelos import (
     AtualizarPermissoes,
     AtualizarServidor,
@@ -92,6 +93,10 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
     backup_manter = int(_env_num("ASAFE_BACKUP_MANTER", 7))  # quantos backups guardar
 
     banco = Banco(caminho_db)
+    energia = SistemaEletro.padrao(
+        n_caixas=int(os.environ.get("ELETRO_CAIXAS", "4")),
+        consumo_w=float(os.environ.get("ELETRO_CONSUMO_W", "60")),
+    )
     arquivos = Arquivos(banco, pasta_arquivos, max_arquivo, cota)
     gestao = GestaoServidores(banco, relogio)
 
@@ -133,6 +138,7 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
     app = FastAPI(title="Asafe", version=__version__, lifespan=ciclo_de_vida,
                   description="Infraestrutura inteligente da Nathanael Industries")
     bearer = HTTPBearer(auto_error=False)
+    app.state.energia = energia
 
     # ---------- Monitoramento: toda requisição vira registro de auditoria ----------
     @app.middleware("http")
@@ -451,5 +457,34 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
         if not gestao.resolver_alerta(alerta_id):
             raise HTTPException(404, "Alerta não encontrado ou já resolvido")
         return {"id": alerta_id, "resolvido": True}
+
+    # ---------- Eletronanologia (caixas virtuais de energia) ----------
+    def _evento_energia(nivel: str | None) -> None:
+        if nivel:
+            banco.executar("INSERT INTO mensagens (de, para, conteudo) VALUES (?,?,?)",
+                           ("asafe", NOME_ADMIN, MENSAGENS[nivel]))
+
+    @app.get("/energia")
+    def estado_energia(_: Agente = Depends(agente_atual)):
+        return energia.estado()
+
+    @app.post("/energia/queda")
+    def queda(_: Agente = Depends(exige("servidores:gerenciar"))):
+        energia.queda_de_luz()
+        _evento_energia(energia.avancar(0))
+        return energia.estado()
+
+    @app.post("/energia/retorno")
+    def retorno(_: Agente = Depends(exige("servidores:gerenciar"))):
+        energia.retorno_da_luz()
+        _evento_energia(energia.avancar(0))
+        return energia.estado()
+
+    @app.post("/energia/avancar")
+    def avancar(horas: float, _: Agente = Depends(exige("servidores:gerenciar"))):
+        if not 0 < horas <= 240:
+            raise HTTPException(422, "horas deve estar entre 0 e 240")
+        _evento_energia(energia.avancar(horas))
+        return energia.estado()
 
     return app
