@@ -319,7 +319,7 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
 
     @app.get("/armazenamento/uso/todos")
     def uso_todos(_: Agente = Depends(so_admin)):
-        nomes = [r["nome"] for r in banco.todos("SELECT nome FROM agentes ORDER BY nome")]
+        nomes = [r["nome"] for r in banco.todos("SELECT nome FROM agentes WHERE categoria != 'servidor' ORDER BY nome")]
         return [arquivos.uso(n) for n in nomes]
 
     # ---------- Armazenamento: arquivos (cada IA tem sua pasta) ----------

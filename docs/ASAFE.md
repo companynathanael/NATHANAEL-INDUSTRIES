@@ -19,6 +19,17 @@ ASAFE_URL=http://IP-DO-ASAFE:8000 ASAFE_TOKEN=asf_... SENTINELA_NOME=srv-01 \
 SENTINELA_ENDERECO=10.0.0.5 python -m asafe.sentinela
 ```
 
+### Painel (site do Asafe)
+
+O site do Asafe (repositório `companynathanael/Asafe`) conversa com esta API. O jeito mais simples é o próprio Asafe servir o site:
+
+```bash
+ASAFE_ADMIN_TOKEN=um-token-secreto ASAFE_PAINEL=/caminho/para/Asafe python -m asafe
+# abra http://127.0.0.1:8000/painel/ → clique na pílula "demonstração · conectar" → cole o token
+```
+
+Também dá para abrir o `index.html` direto: na janela de conexão, informe o endereço da API e o token.
+
 O token de administrador é o do Sr. Nathanael (acesso total). Cada IA recebe seu próprio token ao ser registrada.
 
 ## Responsabilidades × status
@@ -59,6 +70,23 @@ Cada IA (com `dados:ler` / `dados:escrever`) guarda dados (chave → JSON) e arq
 
 ## Servidores
 
+### Gerar servidores
+Pelo painel (aba **Servidores → Gerar servidor**) ou pela API, há dois jeitos:
+
+1. **Já tenho a máquina** (`POST /servidores?gerar_token_sinal=true`): o Asafe cadastra o servidor e devolve um **comando pronto**. Cole o comando na máquina (precisa de Python 3) e em segundos ela aparece **Ao vivo**.
+2. **Criar máquina nova** (`POST /servidores/criar`, só o Sr. Nathanael): o Asafe cria a máquina num **provedor**. Ela liga o sentinela sozinha e passa de **Criando** para **Ao vivo**.
+
+| Provedor | O que faz | Precisa de |
+|---|---|---|
+| `local` | Roda o sentinela como processo na própria máquina do Asafe | Nada (para testar). `ASAFE_PROVEDOR_LOCAL=0` desliga |
+| `oracle` | Cria uma máquina na Oracle Cloud (há máquinas **grátis para sempre**) | Conta Oracle + `pip install oci`. Passo a passo: [SERVIDORES-ORACLE.md](SERVIDORES-ORACLE.md) |
+
+- A máquina nova precisa **alcançar o Asafe pela internet**: defina `ASAFE_URL_PUBLICA` (ex.: `https://asafe.seudominio.com`).
+- Cada servidor recebe um token próprio que **só manda sinal**. Remover o servidor desativa o token; `?destruir_maquina=true` também apaga a máquina no provedor.
+- `GET /provedores` mostra quais provedores estão prontos e, se não estiverem, o que falta.
+
+### Rotas
+
 | Rota | Quem | O que faz |
 |---|---|---|
 | `POST /servidores/sinal` | servidor (`servidores:sinal`) | Batimento com métricas; a resposta traz comandos pendentes |
@@ -85,3 +113,7 @@ Cada IA (com `dados:ler` / `dados:escrever`) guarda dados (chave → JSON) e arq
 | `ASAFE_BACKUP_HORAS` | 24 | Backup automático (0 desliga) |
 | `ASAFE_BACKUP_MANTER` | 7 | Quantos backups guardar |
 | `ASAFE_VIGIA_SEG` | 15 | Frequência da checagem de servidores |
+| `ASAFE_URL_PUBLICA` | endereço da requisição | Endereço do Asafe usado pelas máquinas novas |
+| `ASAFE_PAINEL` | — | Pasta do site do Asafe, servida em `/painel/` |
+| `ASAFE_CORS` | `*` | Endereços que podem abrir o painel em outro lugar (separe por vírgula) |
+| `ASAFE_PROVEDOR_LOCAL` | 1 | 0 desliga o provedor `local` |

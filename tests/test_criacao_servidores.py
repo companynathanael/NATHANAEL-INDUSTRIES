@@ -205,3 +205,22 @@ def test_oracle_recusa_e_nada_fica_pela_metade(oracle, cliente):
     assert cliente.get("/servidores/srv-nuvem", headers=h(ADMIN)).status_code == 404
     agentes = {a["nome"]: a for a in cliente.get("/agentes", headers=h(ADMIN)).json()}
     assert agentes["srv-srv-nuvem"]["ativo"] is False
+
+
+def test_sinal_sem_endereco_nao_apaga_o_conhecido(cliente):
+    cliente.post("/servidores", headers=h(ADMIN), json={"nome": "srv-01", "endereco": "10.0.0.5"})
+    cliente.post("/servidores/sinal", headers=h(ADMIN), json={"nome": "srv-01", "endereco": "desconhecido"})
+    assert cliente.get("/servidores/srv-01", headers=h(ADMIN)).json()["endereco"] == "10.0.0.5"
+    cliente.post("/servidores/sinal", headers=h(ADMIN), json={"nome": "srv-01", "endereco": "10.0.0.9"})
+    assert cliente.get("/servidores/srv-01", headers=h(ADMIN)).json()["endereco"] == "10.0.0.9"
+
+
+def test_uso_todos_ignora_agentes_de_servidor(cliente):
+    registrar(cliente, "horacio", ["dados:ler"])
+    cliente.post("/servidores?gerar_token_sinal=true", headers=h(ADMIN), json={"nome": "srv-01", "endereco": "x"})
+    assert [u["agente"] for u in cliente.get("/armazenamento/uso/todos", headers=h(ADMIN)).json()] == ["horacio"]
+
+
+def test_sentinela_descobre_o_proprio_endereco():
+    from asafe.sentinela import descobrir_endereco
+    assert descobrir_endereco("http://127.0.0.1:8000") == "127.0.0.1"

@@ -98,6 +98,19 @@ def ciclo(url: str, token: str, nome: str, endereco: str) -> list[dict]:
     return resp.get("comandos", [])
 
 
+def descobrir_endereco(url: str) -> str:
+    """IP desta máquina na rota até o Asafe (não envia nada pela rede)."""
+    import socket
+    from urllib.parse import urlparse
+    host = urlparse(url).hostname or "8.8.8.8"
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect((host, 80))
+            return s.getsockname()[0]
+    except OSError:
+        return socket.gethostname()
+
+
 def main() -> int:
     url = os.environ.get("ASAFE_URL", "http://127.0.0.1:8000").rstrip("/")
     token = os.environ.get("ASAFE_TOKEN")
@@ -105,7 +118,7 @@ def main() -> int:
     if not token or not nome:
         print("Defina ASAFE_TOKEN e SENTINELA_NOME.", file=sys.stderr)
         return 1
-    endereco = os.environ.get("SENTINELA_ENDERECO", "desconhecido")
+    endereco = os.environ.get("SENTINELA_ENDERECO") or descobrir_endereco(url)
     intervalo = float(os.environ.get("SENTINELA_INTERVALO", 30))
     print(f"Sentinela de {nome} enviando sinal para {url} a cada {intervalo:.0f}s")
     while True:

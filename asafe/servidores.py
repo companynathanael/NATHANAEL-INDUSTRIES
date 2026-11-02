@@ -99,7 +99,8 @@ class GestaoServidores:
         self.banco.executar(
             "INSERT INTO servidores (nome, endereco, info, sinal_em, cpu, memoria, disco, estado) "
             "VALUES (?,?,?,?,?,?,?, 'online') "
-            "ON CONFLICT(nome) DO UPDATE SET endereco=excluded.endereco, info=excluded.info, "
+            "ON CONFLICT(nome) DO UPDATE SET endereco=CASE WHEN excluded.endereco IN ('desconhecido', 'a definir') "
+            "THEN servidores.endereco ELSE excluded.endereco END, info=excluded.info, "
             "sinal_em=excluded.sinal_em, cpu=excluded.cpu, memoria=excluded.memoria, disco=excluded.disco, "
             "estado='online', ultimo_sinal=datetime('now')",
             (nome, endereco, json.dumps(info, ensure_ascii=False), agora, *valores.values()))
