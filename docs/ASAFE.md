@@ -36,20 +36,22 @@ O token de administrador é o do Sr. Nathanael (acesso total). Cada IA recebe se
 
 | # | Responsabilidade | Status | O que existe |
 |---|---|---|---|
-| 1 | Criação de APIs | ✅ Base pronta | API REST (FastAPI) com documentação automática em `/docs` |
-| 2 | Gerenciamento de permissões | ✅ Base pronta | Tokens por IA, 8 permissões, admin, desativar IA, trocar token |
-| 3 | Conexão entre IAs | ✅ Base pronta | Caixa de mensagens entre IAs (e para o Sr. Nathanael) |
-| 4 | Monitoramento das ações dos agentes | ✅ Base pronta | Auditoria automática de toda requisição (inclusive as negadas) |
-| 5 | Armazenamento de dados | ✅ Base pronta | Dados e **arquivos** por IA (isolados), limite por arquivo e **cota** por IA, **backups** manuais e automáticos com retenção, **restauração** |
-| 6 | Servidores | ✅ Base pronta | Cadastro, **métricas** (CPU/memória/disco) com histórico, estados online/offline/manutenção, **alertas** automáticos (caiu, voltou, limite passado) com aviso ao Sr. Nathanael, **comandos remotos** e **sentinela** |
-| 7 | Eletronanologia (energia de reserva quando a luz cai) | ⏳ Pendente (meta de quarta, 04/11) | Rascunho virtual: 4 caixas, 48 h, alertas. Ver [ELETRONANOLOGIA.md](ELETRONANOLOGIA.md) |
+| 1 | Gerenciamento de permissões | ✅ Base pronta | Tokens por IA, 8 permissões, admin, desativar IA, trocar token |
+| 2 | Conexão entre IAs | ✅ Base pronta | Caixa de mensagens entre IAs (e para o Sr. Nathanael) |
+| 3 | Monitoramento das ações dos agentes | ✅ Base pronta | Auditoria automática de toda requisição (inclusive as negadas) |
+| 4 | Armazenamento de dados | ✅ Base pronta | Dados e **arquivos** por IA (isolados), limite por arquivo e **cota** por IA, **backups** manuais e automáticos com retenção, **restauração** |
+| 5 | Servidores | ✅ Base pronta | Cadastro, **métricas** (CPU/memória/disco) com histórico, estados online/offline/manutenção, **alertas** automáticos (caiu, voltou, limite passado) com aviso ao Sr. Nathanael, **comandos remotos** e **sentinela** |
+| 6 | Eletronanologia (energia de reserva quando a luz cai) | ⏳ Pendente (meta de quarta, 04/11) | Rascunho virtual: 4 caixas, 48 h, alertas. Ver [ELETRONANOLOGIA.md](ELETRONANOLOGIA.md) |
+
+> **Criação de APIs não é função do Asafe**: é do **Gather**, que cria e gerencia as próprias APIs.
+> O Asafe só tem a sua própria API (a porta de entrada usada pelas IAs e pelo painel, com documentação em `/docs`).
 
 ## Próxima metade (50% → 100%)
 - [ ] Mensagens em tempo real (WebSocket) em vez de só consulta.
 - [x] Armazenamento de arquivos e backups automáticos.
 - [x] Gestão de servidores: métricas, alertas quando um servidor cai.
 - [ ] Banco de produção (PostgreSQL) e HTTPS.
-- [ ] Integração com o Gather (credenciais de APIs guardadas no Asafe).
+- [ ] Integração com o Gather (conexão Asafe ↔ Gather; o Asafe guarda os dados e credenciais que o Gather pedir).
 - [ ] Painel visual para o Sr. Nathanael acompanhar as IAs.
 
 ## Armazenamento

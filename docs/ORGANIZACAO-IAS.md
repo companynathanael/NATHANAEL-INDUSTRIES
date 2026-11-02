@@ -43,10 +43,10 @@ IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecno
 - **Responsável por:**
   - Desenvolvimento e gerenciamento de servidores.
   - Armazenamento de dados.
-  - Criação de APIs.
   - Conexão entre inteligências artificiais.
   - Monitoramento das ações dos agentes.
   - Gerenciamento de permissões e comunicação.
+- **Não faz:** criação de APIs. Isso é responsabilidade do **Gather**, que cria e gerencia as próprias APIs.
 
 ### Gather — 0.1
 - **Status:** Planejamento
