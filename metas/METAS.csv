@@ -1,5 +1,5 @@
 data,ia,meta,status,testes_ok,testes_falha,observacoes
 2026-11-02,Asafe,Chegar a 50%: API base (agentes; permissões; mensagens; dados; auditoria; servidores),concluida,9,0,Ver docs/ASAFE.md
 2026-11-02,Gather,Criar o esqueleto (6 responsabilidades),concluida,0,0,Apenas estrutura; sem testes ainda
-2026-11-02,Asafe,Eletronanologia virtual: 4 caixas; 48 h; alertas automáticos,concluida,3,0,Ver docs/ELETRONANOLOGIA.md
 2026-11-03,Gather,Gather completo,pendente,,,
+2026-11-04,Asafe,Eletronanologia: 3 a 4 caixas; 48 h de autonomia; alertas automáticos,pendente,,,Rascunho virtual já existe em asafe/eletronanologia.py (3 testes ok) e pode ser usado como base; ver docs/ELETRONANOLOGIA.md
