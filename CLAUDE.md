@@ -21,6 +21,10 @@ Detalhes: @metas/COMO-USAR.md
 - **Auxiliares:** Horácio HoV 1.1 (assistente pessoal do Sr. Nathanael, em desenvolvimento); Miquéias JpG 1.0 (tarefas, cálculos e trading, em desenvolvimento).
 - **Desenvolvedores:** Asafe 0.1 (infraestrutura inteligente, em recriação); Gather 0.1 (orquestração de APIs, em planejamento).
 
+## Estrutura
+- **Motores:** Asafe e Gather.
+- **Submotores:** Asafe 3 · Gather 3 · total 6 (nomes e funções a confirmar).
+
 ## Código
 - `asafe/` — API do Asafe (Python/FastAPI + SQLite). Testes em `tests/` (`python -m pytest -q`).
   - `armazenamento.py` (arquivos, cota, backups), `servidores.py` (métricas, alertas, comandos), `backup.py` (CLI), `sentinela.py` (roda em cada servidor).
