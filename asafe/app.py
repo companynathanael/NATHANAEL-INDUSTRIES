@@ -16,6 +16,9 @@ from pathlib import Path
 from typing import Callable
 
 from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
@@ -35,6 +38,7 @@ from .eletronanologia import MENSAGENS, SistemaEletro
 from .modelos import (
     AtualizarPermissoes,
     AtualizarServidor,
+    NovaMaquina,
     NovaMensagem,
     NovoAgente,
     NovoComando,
@@ -52,6 +56,7 @@ from .seguranca import (
     tem_permissao,
     tokens_iguais,
 )
+from .provedores import ErroProvedor, Pedido, carregar_provedores
 from .servidores import GestaoServidores
 
 log = logging.getLogger("asafe")
@@ -99,6 +104,8 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
     )
     arquivos = Arquivos(banco, pasta_arquivos, max_arquivo, cota)
     gestao = GestaoServidores(banco, relogio)
+    provedores = carregar_provedores()
+    url_publica = os.environ.get("ASAFE_URL_PUBLICA")  # endereço do Asafe visto pelas máquinas novas
 
     def fazer_backup() -> dict:
         b = criar_backup(banco, pasta_arquivos, pasta_backups, relogio())
@@ -138,6 +145,11 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
     app = FastAPI(title="Asafe", version=__version__, lifespan=ciclo_de_vida,
                   description="Infraestrutura inteligente da Nathanael Industries")
     bearer = HTTPBearer(auto_error=False)
+
+    # Painel (site) pode chamar a API de outro endereço. Tokens vão no cabeçalho, sem cookies.
+    origens = [o.strip() for o in os.environ.get("ASAFE_CORS", "*").split(",") if o.strip()]
+    app.add_middleware(CORSMiddleware, allow_origins=origens, allow_methods=["*"],
+                       allow_headers=["Authorization", "Content-Type"], expose_headers=["X-Sha256"])
     app.state.energia = energia
 
     # ---------- Monitoramento: toda requisição vira registro de auditoria ----------
@@ -397,11 +409,75 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
             raise HTTPException(404, "Servidor não encontrado")
         return s
 
+    def _token_do_servidor(nome: str) -> tuple[str, str]:
+        """Cria (ou renova) o agente que o servidor usa para mandar sinal. Só pode mandar sinal."""
+        agente = ("srv-" + nome)[:40]
+        token = gerar_token()
+        if banco.um("SELECT 1 FROM agentes WHERE nome=?", (agente,)):
+            banco.executar("UPDATE agentes SET token_hash=?, ativo=1 WHERE nome=?", (hash_token(token), agente))
+        else:
+            banco.executar("INSERT INTO agentes (nome, categoria, versao, token_hash, permissoes) "
+                           "VALUES (?, 'servidor', '-', ?, 'servidores:sinal')", (agente, hash_token(token)))
+        banco.executar("UPDATE servidores SET agente_sinal=? WHERE nome=?", (agente, nome))
+        return agente, token
+
+    def _comando_sentinela(request: Request, nome: str, token: str, intervalo: int) -> str:
+        url = (url_publica or str(request.base_url)).rstrip("/")
+        return (f"curl -fsSL {url}/sentinela.py -o sentinela.py && "
+                f"ASAFE_URL={url} ASAFE_TOKEN={token} SENTINELA_NOME={nome} "
+                f"SENTINELA_INTERVALO={intervalo} python3 sentinela.py")
+
     @app.post("/servidores", status_code=201)
-    def cadastrar_servidor(s: NovoServidor, _: Agente = Depends(gerenciar)):
+    def cadastrar_servidor(s: NovoServidor, request: Request, gerar_token_sinal: bool = False,
+                           _: Agente = Depends(gerenciar)):
         if not gestao.cadastrar(s.nome, s.endereco, s.intervalo, s.limites.model_dump(), s.responsavel):
             raise HTTPException(409, "Servidor já existe")
-        return gestao.obter(s.nome)
+        resposta = gestao.obter(s.nome)
+        if gerar_token_sinal:
+            agente, token = _token_do_servidor(s.nome)
+            resposta |= {"token": token, "agente_sinal": agente,
+                         "comando_sentinela": _comando_sentinela(request, s.nome, token, s.intervalo),
+                         "aviso": "Guarde o token: ele não será exibido novamente."}
+        return resposta
+
+    # ---------- Criação de máquinas (provedores) ----------
+    @app.get("/provedores")
+    def listar_provedores(_: Agente = Depends(gerenciar)):
+        return [p.info() for p in provedores.values()]
+
+    @app.post("/servidores/criar", status_code=201)
+    def criar_maquina(s: NovaMaquina, request: Request, _: Agente = Depends(so_admin)):
+        prov = provedores.get(s.provedor)
+        if not prov:
+            raise HTTPException(422, f"Provedor desconhecido: {s.provedor}")
+        ok, motivo = prov.configurado()
+        if not ok:
+            raise HTTPException(409, f"Provedor {s.provedor} não configurado: {motivo}")
+        if not gestao.cadastrar(s.nome, s.endereco, s.intervalo, s.limites.model_dump(), s.responsavel,
+                                provedor=s.provedor):
+            raise HTTPException(409, "Servidor já existe")
+        agente, token = _token_do_servidor(s.nome)
+        url = (url_publica or str(request.base_url)).rstrip("/")
+        try:
+            maq = prov.criar(Pedido(nome=s.nome, asafe_url=url, token=token, intervalo=s.intervalo, opcoes=s.opcoes))
+        except ErroProvedor as e:
+            gestao.remover(s.nome)
+            banco.executar("UPDATE agentes SET ativo=0 WHERE nome=?", (agente,))
+            raise HTTPException(502, str(e))
+        campos = {"maquina_id": maq.id}
+        if maq.endereco:
+            campos["endereco"] = maq.endereco
+        gestao.atualizar(s.nome, campos)
+        return gestao.obter(s.nome) | {"maquina": {"id": maq.id, "estado": maq.estado, **maq.detalhes}}
+
+    painel = os.environ.get("ASAFE_PAINEL")  # pasta do site do Asafe (opcional): abre em /painel/
+    if painel and Path(painel).is_dir():
+        app.mount("/painel", StaticFiles(directory=painel, html=True), name="painel")
+
+    @app.get("/sentinela.py", response_class=PlainTextResponse)
+    def baixar_sentinela():
+        """Programa que roda em cada servidor (público: não contém segredos)."""
+        return (Path(__file__).parent / "sentinela.py").read_text(encoding="utf-8")
 
     @app.get("/servidores")
     def servidores(_: Agente = Depends(gerenciar)):
@@ -422,10 +498,23 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
         return gestao.obter(nome)
 
     @app.delete("/servidores/{nome}")
-    def remover_servidor(nome: str, _: Agente = Depends(gerenciar)):
-        if not gestao.remover(nome):
-            raise HTTPException(404, "Servidor não encontrado")
-        return {"nome": nome, "removido": True}
+    def remover_servidor(nome: str, destruir_maquina: bool = False, ag: Agente = Depends(gerenciar)):
+        s = _servidor(nome)
+        destruida = False
+        if destruir_maquina and s.get("provedor") and s.get("maquina_id"):
+            if "*" not in ag.permissoes:
+                raise HTTPException(403, "Apenas o Sr. Nathanael pode destruir máquinas")
+            prov = provedores.get(s["provedor"])
+            if prov:
+                try:
+                    prov.destruir(s["maquina_id"])
+                    destruida = True
+                except ErroProvedor as e:
+                    raise HTTPException(502, str(e))
+        gestao.remover(nome)
+        if s.get("agente_sinal"):
+            banco.executar("UPDATE agentes SET ativo=0 WHERE nome=?", (s["agente_sinal"],))
+        return {"nome": nome, "removido": True, "maquina_destruida": destruida}
 
     @app.get("/servidores/{nome}/metricas")
     def metricas_servidor(nome: str, limite: int = 100, _: Agente = Depends(gerenciar)):

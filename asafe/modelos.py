@@ -62,6 +62,13 @@ class AtualizarServidor(BaseModel):
     responsavel: str | None = Field(default=None, pattern=NOME)
 
 
+class NovaMaquina(NovoServidor):
+    """Pede ao Asafe para CRIAR uma máquina nova num provedor."""
+    endereco: str = "a definir"
+    provedor: str = Field(pattern=r"^[a-z]{2,20}$")
+    opcoes: dict[str, Any] = {}
+
+
 COMANDOS = ("reiniciar", "parar", "atualizar", "limpar_cache", "coletar_logs")
 
 

@@ -31,6 +31,8 @@ class GestaoServidores:
     def status(self, row: dict) -> str:
         if row["manutencao"]:
             return "manutencao"
+        if row.get("provedor") and row["sinal_em"] is None:
+            return "criando"   # máquina criada pelo Asafe, ainda ligando
         if row["sinal_em"] is None or self.relogio() - row["sinal_em"] > row["intervalo"] * FOLGA:
             return "offline"
         return "online"
@@ -61,13 +63,14 @@ class GestaoServidores:
             (nome, max(1, min(limite, MAX_METRICAS_POR_SERVIDOR))))
 
     # ------------------------------------------------------------ cadastro
-    def cadastrar(self, nome: str, endereco: str, intervalo: int, limites: dict, responsavel: str | None) -> bool:
+    def cadastrar(self, nome: str, endereco: str, intervalo: int, limites: dict, responsavel: str | None,
+                  provedor: str | None = None) -> bool:
         if self.banco.um("SELECT 1 FROM servidores WHERE nome=?", (nome,)):
             return False
         self.banco.executar(
-            "INSERT INTO servidores (nome, endereco, intervalo, limites, responsavel, estado) "
-            "VALUES (?,?,?,?,?, 'offline')",
-            (nome, endereco, intervalo, json.dumps(limites), responsavel))
+            "INSERT INTO servidores (nome, endereco, intervalo, limites, responsavel, estado, provedor) "
+            "VALUES (?,?,?,?,?, 'offline', ?)",
+            (nome, endereco, intervalo, json.dumps(limites), responsavel, provedor))
         return True
 
     def atualizar(self, nome: str, campos: dict) -> None:

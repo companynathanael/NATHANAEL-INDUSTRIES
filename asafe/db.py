@@ -93,6 +93,9 @@ MIGRACOES = {
         "estado": "TEXT NOT NULL DEFAULT 'online'", # último estado conhecido (para detectar quedas)
         "responsavel": "TEXT",
         "cpu": "REAL", "memoria": "REAL", "disco": "REAL",
+        "provedor": "TEXT",       # local | oracle | NULL (máquina cadastrada à mão)
+        "maquina_id": "TEXT",     # id da máquina no provedor
+        "agente_sinal": "TEXT",   # agente cujo token o servidor usa para mandar sinal
     },
 }
 
