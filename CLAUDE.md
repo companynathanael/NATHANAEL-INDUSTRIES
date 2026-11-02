@@ -22,7 +22,9 @@ Detalhes: @metas/COMO-USAR.md
 - **Desenvolvedores:** Asafe 0.1 (infraestrutura inteligente, em recriação); Gather 0.1 (orquestração de APIs, em planejamento).
 
 ## Estrutura
-- **Motores:** Asafe, Gather e **Bezalel** (3º motor, criador de IAs; cores preto e verde; conceito).
+- **Motores:** Asafe, Gather e **Bezalel** (3º motor, criador de IAs; cores preto e verde; logo: bigorna; conceito).
+- **Fornalha:** cores preto e laranja; logo: fornalha com chama. ⚠️ Categoria e atividade EM AVALIAÇÃO; não atribuir funções.
+- Logos e cores: @identidade/IDENTIDADE.md
 - **Submotores:** Asafe 3 · Gather 3 · total 6. São peças de **sustentação**: NÃO tiram funções do motor; sustentam a diferença entre IA básica e motor. Pilares confirmados: Continuidade, Memória, Autonomia. Nomes temporários: Asafe → Âncora, Anais, Arbítrio; Gather → Guardião, Gravador, Guia. Ainda não produzidos.
 
 ## Código

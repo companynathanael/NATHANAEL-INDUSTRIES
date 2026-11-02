@@ -64,6 +64,7 @@ IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecno
 - **Status:** Conceito
 - **Classificação:** Criador de IAs.
 - **Cores:** preto e verde.
+- **Logo:** bigorna ([identidade/logos/bezalel.jpg](../identidade/logos/bezalel.jpg)).
 - **Origem do nome:** Bezalel, o artesão escolhido para construir o tabernáculo (Êxodo 31).
 - **Responsável por (proposta):**
   - Definição de novas IAs (propósito, personalidade, regras).
@@ -85,6 +86,15 @@ IAs responsáveis por desenvolver, administrar e expandir a infraestrutura tecno
 - Detalhes em [ROADMAP.md](ROADMAP.md).
 
 > Outras IAs desenvolvedoras serão criadas futuramente.
+
+---
+
+## Em avaliação
+
+### Fornalha
+- **Status:** ⚠️ Em avaliação. Categoria e atividade ainda não definidas.
+- **Cores:** preto e laranja.
+- **Logo:** fornalha com chama ([identidade/logos/fornalha.jpg](../identidade/logos/fornalha.jpg)).
 
 ---
 
