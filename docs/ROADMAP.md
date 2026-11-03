@@ -4,7 +4,7 @@ A criação segue esta ordem. Uma fase só começa quando a anterior estiver pro
 
 | Fase | O quê | Status |
 |---|---|---|
-| 1 | **Asafe** (infraestrutura inteligente) | 🟡 50% — eletronanologia pendente (terça, 03/11) |
+| 1 | **Asafe** (infraestrutura inteligente) | 🟡 6/6 funções com base pronta (eletronanologia virtual concluída em 03/11); falta a "próxima metade" de docs/ASAFE.md |
 | 2 | **Gather** (orquestração de APIs) | 🟡 Esqueleto — completo previsto para quarta (04/11) |
 | 3 | **Fornalha** (4º motor: transformação — fundição, prova de fogo, desempenho) | ⚪ Conceito; cores preto e laranja |
 | 4 | **Bezalel** (3º motor: criador de IAs) | ⚪ Conceito; cores preto e verde |

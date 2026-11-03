@@ -17,7 +17,7 @@ from typing import Callable
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -34,7 +34,7 @@ from .armazenamento import (
     listar_backups,
 )
 from .db import Banco
-from .eletronanologia import MENSAGENS, SistemaEletro
+from .eletronanologia import GestaoEnergia, comando_desligar_configurado
 from .modelos import (
     AtualizarPermissoes,
     AtualizarServidor,
@@ -98,10 +98,6 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
     backup_manter = int(_env_num("ASAFE_BACKUP_MANTER", 7))  # quantos backups guardar
 
     banco = Banco(caminho_db)
-    energia = SistemaEletro.padrao(
-        n_caixas=int(os.environ.get("ELETRO_CAIXAS", "4")),
-        consumo_w=float(os.environ.get("ELETRO_CONSUMO_W", "60")),
-    )
     arquivos = Arquivos(banco, pasta_arquivos, max_arquivo, cota)
     gestao = GestaoServidores(banco, relogio)
     provedores = carregar_provedores()
@@ -112,6 +108,12 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
         b["apagados"] = limpar_backups(pasta_backups, backup_manter)
         return b
 
+    # Eletronanologia: caixas de energia guardadas no banco; no nível crítico, backup + desligamento seguro.
+    energia = GestaoEnergia(banco, relogio,
+                            n_caixas=int(os.environ.get("ELETRO_CAIXAS", "4")),
+                            consumo_w=float(os.environ.get("ELETRO_CONSUMO_W", "60")),
+                            ao_salvar=fazer_backup, cmd_desligar=comando_desligar_configurado())
+
     # ---------- Tarefas automáticas (rodam enquanto o Asafe estiver no ar) ----------
     async def vigia():
         while True:
@@ -119,6 +121,7 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
             try:
                 for a in gestao.verificar():
                     log.warning("ALERTA: %s", a["mensagem"])
+                energia.sincronizar()  # descarrega/recarrega as caixas em tempo real
             except Exception:  # o vigia nunca pode morrer
                 log.exception("Falha ao verificar servidores")
 
@@ -153,9 +156,25 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
     app.state.energia = energia
 
     # ---------- Monitoramento: toda requisição vira registro de auditoria ----------
+    # Modo protegido (energia crítica): só o Sr. Nathanael grava; servidores ainda mandam sinal.
+    LIVRES_NO_MODO_PROTEGIDO = ("/servidores/sinal", "/energia")
+
+    def _bloqueado_por_energia(request: Request) -> bool:
+        if request.method not in ("POST", "PUT", "PATCH", "DELETE") or not energia.protegido:
+            return False
+        caminho = request.url.path
+        if caminho.startswith(LIVRES_NO_MODO_PROTEGIDO) or caminho.endswith("/resultado"):
+            return False
+        cab = request.headers.get("authorization", "")
+        return not (cab.lower().startswith("bearer ") and tokens_iguais(cab[7:].strip(), token_admin))
+
     @app.middleware("http")
     async def auditar(request: Request, call_next):
-        resposta = await call_next(request)
+        if _bloqueado_por_energia(request):
+            resposta = JSONResponse({"detail": "Energia crítica: Asafe em modo protegido, sem gravações até a luz voltar."},
+                                    status_code=503)
+        else:
+            resposta = await call_next(request)
         if request.url.path not in ("/saude", "/docs", "/openapi.json"):
             agente = getattr(request.state, "agente", "anonimo")
             banco.executar(
@@ -391,6 +410,7 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
     def sinal(s: Sinal, _: Agente = Depends(exige_alguma("servidores:sinal", "servidores:gerenciar"))):
         comandos = gestao.receber_sinal(s.nome, s.endereco, s.info,
                                         {"cpu": s.cpu, "memoria": s.memoria, "disco": s.disco})
+        energia.receber_fonte(s.nome, s.info)  # nobreak/bateria real informada pelo servidor
         return {"nome": s.nome, "ok": True, "comandos": comandos}
 
     @app.post("/servidores/{nome}/comandos/{comando_id}/resultado")
@@ -547,33 +567,31 @@ def criar_app(caminho_db: str | None = None, token_admin: str | None = None, *,
             raise HTTPException(404, "Alerta não encontrado ou já resolvido")
         return {"id": alerta_id, "resolvido": True}
 
-    # ---------- Eletronanologia (caixas virtuais de energia) ----------
-    def _evento_energia(nivel: str | None) -> None:
-        if nivel:
-            banco.executar("INSERT INTO mensagens (de, para, conteudo) VALUES (?,?,?)",
-                           ("asafe", NOME_ADMIN, MENSAGENS[nivel]))
-
+    # ---------- Eletronanologia (caixas de energia) ----------
     @app.get("/energia")
     def estado_energia(_: Agente = Depends(agente_atual)):
+        energia.sincronizar()
         return energia.estado()
+
+    @app.get("/energia/eventos")
+    def eventos_energia(limite: int = 50, _: Agente = Depends(agente_atual)):
+        return energia.eventos(limite)
 
     @app.post("/energia/queda")
     def queda(_: Agente = Depends(exige("servidores:gerenciar"))):
-        energia.queda_de_luz()
-        _evento_energia(energia.avancar(0))
+        energia.queda("simulacao")
         return energia.estado()
 
     @app.post("/energia/retorno")
     def retorno(_: Agente = Depends(exige("servidores:gerenciar"))):
-        energia.retorno_da_luz()
-        _evento_energia(energia.avancar(0))
+        energia.retorno("simulacao")
         return energia.estado()
 
     @app.post("/energia/avancar")
     def avancar(horas: float, _: Agente = Depends(exige("servidores:gerenciar"))):
         if not 0 < horas <= 240:
             raise HTTPException(422, "horas deve estar entre 0 e 240")
-        _evento_energia(energia.avancar(horas))
+        energia.avancar(horas)
         return energia.estado()
 
     return app

@@ -70,6 +70,27 @@ CREATE TABLE IF NOT EXISTS alertas (
     criado_em   TEXT NOT NULL DEFAULT (datetime('now')),
     resolvido_em TEXT
 );
+CREATE TABLE IF NOT EXISTS energia (
+    id          INTEGER PRIMARY KEY CHECK (id = 1),   -- uma linha só: o estado das caixas
+    estado      TEXT NOT NULL,                        -- JSON
+    atualizado_em REAL NOT NULL                       -- epoch da última atualização (para descarregar em tempo real)
+);
+CREATE TABLE IF NOT EXISTS energia_eventos (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    tipo        TEXT NOT NULL,          -- nivel | queda | retorno | backup | desligamento | fonte
+    nivel       TEXT,
+    mensagem    TEXT NOT NULL,
+    origem      TEXT NOT NULL,          -- simulacao | <nome do servidor> | asafe
+    criado_em   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS energia_fontes (
+    servidor    TEXT PRIMARY KEY,       -- servidor que mandou o estado de energia no sinal
+    na_rede     INTEGER NOT NULL,
+    bateria_pct REAL,
+    autonomia_min REAL,
+    nivel       TEXT NOT NULL,
+    momento     REAL NOT NULL
+);
 CREATE TABLE IF NOT EXISTS comandos (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     servidor    TEXT NOT NULL,

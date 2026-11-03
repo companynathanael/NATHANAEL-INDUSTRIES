@@ -38,21 +38,32 @@ Cada unidade de eletronanologia envia seu estado ao Asafe pelo endpoint
 - **O que fica ligado:** **apenas o Asafe**. As outras IAs funcionam através dele.
 - **Orçamento:** **R$ 0**. Por isso a eletronanologia começa **virtual** (em software).
 
-## Versão virtual (já implementada)
-Código em `asafe/eletronanologia.py`, com rotas na API do Asafe:
+## Versão virtual (✅ completa em 03/11)
+Código em `asafe/eletronanologia.py`, com rotas na API do Asafe e a aba **Energia** no painel:
 
 | Rota | O que faz |
 |---|---|
-| `GET /energia` | Estado das caixas: carga, autonomia restante, nível |
+| `GET /energia` | Estado das caixas: carga, autonomia restante, nível, modo protegido, fontes físicas e últimos eventos |
+| `GET /energia/eventos` | Histórico de energia (quedas, níveis, backups, desligamentos, fontes) |
 | `POST /energia/queda` | Simula uma queda de luz |
 | `POST /energia/retorno` | Simula a volta da luz (as caixas recarregam) |
 | `POST /energia/avancar?horas=N` | Avança o tempo da simulação |
 
-Níveis: `normal` → `bateria` → `aviso` (≤25%) → `critico` (≤10%, salvar e desligar) → `desligado`.
-A cada mudança de nível, o Asafe **envia uma mensagem automática ao Sr. Nathanael**.
+- **4 caixas** (padrão), dimensionadas para **48 h**. Descarga em sequência: quando uma esvazia, a próxima assume.
+- **Estado guardado no banco**: caixas, carga e nível voltam iguais depois que o Asafe reinicia.
+- **Tempo real**: com a luz fora, as caixas descarregam sozinhas (e recarregam quando ela volta), sem precisar simular.
+- **Níveis:** `normal` → `bateria` → `aviso` (≤25%) → `critico` (≤10%) → `desligado`. Cada mudança vira **mensagem ao Sr. Nathanael**.
+- **Crítico = salvar e desligar com segurança:**
+  1. **backup de emergência** automático (banco + arquivos);
+  2. **modo protegido**: as IAs não gravam nada (resposta 503) até a luz voltar. Leitura, sinal dos servidores e o Sr. Nathanael continuam;
+  3. opcional: roda o comando de desligamento configurado pelo dono da máquina (`ASAFE_ENERGIA_CMD_DESLIGAR`).
+  Mesmo que o Asafe fique fora do ar muito tempo, o nível crítico nunca é pulado.
+- **Energia real (fontes físicas):** cada servidor/nobreak que manda `na_rede_eletrica`, `bateria_pct` e `autonomia_min`
+  no `info` do sinal aparece como fonte, com o próprio nível e alertas. Se uma fonte avisar que a luz caiu, as caixas
+  do Asafe assumem sozinhas; quando todas as fontes voltam à rede, o Asafe volta ao normal.
 
-Configuração: `ELETRO_CAIXAS` (padrão 4) e `ELETRO_CONSUMO_W` (consumo estimado, padrão 60 W).
-As caixas são dimensionadas automaticamente para cobrir 48 h.
+Configuração: `ELETRO_CAIXAS` (padrão 4), `ELETRO_CONSUMO_W` (consumo estimado, padrão 60 W) e
+`ASAFE_ENERGIA_CMD_DESLIGAR` (opcional, ex.: `systemctl poweroff`). Mudar o número de caixas mantém a carga em %.
 
 ## Referência para a versão física (futuro)
 Energia necessária = consumo × 48 h. Exemplos:
@@ -65,7 +76,7 @@ Energia necessária = consumo × 48 h. Exemplos:
 > luz local, pois os data centers já têm geradores próprios.
 
 ## Fases
-1. **Virtual:** ✅ simulação das caixas, alertas e níveis dentro do Asafe.
+1. **Virtual:** ✅ caixas guardadas no banco, descarga em tempo real, alertas, backup e modo protegido no crítico, leitura de fontes físicas e aba Energia no painel.
 2. **Protótipo físico:** quando houver recursos, um nobreak (UPS) com bateria alimentando o servidor do Asafe + roteador.
 3. **Monitoramento real:** o Asafe lê o estado da bateria e envia alertas.
 4. **Desligamento inteligente:** o Asafe salva tudo e desliga com segurança antes da bateria zerar.
