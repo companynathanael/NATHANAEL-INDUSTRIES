@@ -1,0 +1,1553 @@
+<title>Última Centelha</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Toda a luz do mundo se apagou. Menos você. Sobreviva até o amanhecer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: o jogo ocupa a tela inteira (canvas). Menus são camadas de texto sobre o escuro,
+   alinhadas à esquerda como créditos de filme; a centelha fica sempre no centro. */
+:root{
+  --breu:#04060b;          /* fundo: noite sem estrelas */
+  --breu-2:#0b0e16;        /* superfícies */
+  --veu:rgba(4,6,11,.9);
+  --vidro:rgba(9,11,18,.86);
+  --linha:rgba(255,210,122,.24);
+  --linha-fraca:rgba(239,232,216,.1);
+  --texto:#efe8d8;
+  --apagado:#958d7c;       /* neutro puxado para o âmbar */
+  --centelha:#ffd27a;      /* a luz */
+  --centelha-2:#ffae42;
+  --tinta:#1a1205;         /* texto sobre a luz */
+  --sangue:#ff4d5e;        /* o Breu */
+  --frio:#a89bff;
+  --f-titulo:"Big Shoulders Display","Arial Narrow","Roboto Condensed",Impact,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --f-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--breu);color:var(--texto);overflow:hidden}
+body{font-family:var(--f-ui);font-size:15px;line-height:1.5;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#cv{position:fixed;inset:0;width:100%;height:100%;display:block;background:var(--breu);touch-action:none}
+
+/* ---------- telas ---------- */
+.tela{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
+  padding-block:calc(env(safe-area-inset-top,0px) + 28px) calc(env(safe-area-inset-bottom,0px) + 28px);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.marca{font:500 11px/1.3 var(--f-mono);letter-spacing:.22em;text-transform:uppercase;color:var(--apagado)}
+.h2{font:800 clamp(34px,6vw,56px)/.9 var(--f-titulo);text-transform:uppercase;letter-spacing:.01em;margin:0;text-wrap:balance}
+.grande{font:900 clamp(64px,15vw,140px)/.82 var(--f-titulo);text-transform:uppercase;letter-spacing:-.005em;margin:0}
+.grande.vit{color:var(--centelha);text-shadow:0 0 22px rgba(255,190,90,.5),0 0 70px rgba(255,150,40,.3)}
+.grande.der{color:var(--texto)}
+.btn{font:500 12px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--texto);background:var(--vidro);border:1px solid var(--linha);
+  padding:15px 18px;border-radius:2px;cursor:pointer;display:inline-flex;align-items:center;justify-content:space-between;gap:14px;transition:border-color .15s,background .15s,transform .08s}
+.btn:hover{border-color:var(--centelha);background:rgba(255,210,122,.07)}
+.btn:focus-visible,.carta:focus-visible,.escolha:focus-visible{outline:2px solid var(--centelha);outline-offset:3px}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.prim{background:var(--centelha);color:var(--tinta);border-color:var(--centelha);font-weight:600}
+.btn.prim:hover{background:#ffe3a8}
+.btn .k{opacity:.62;font-size:10.5px;letter-spacing:.1em}
+.btn.prim .k{opacity:.7}
+.acoes{display:flex;flex-wrap:wrap;gap:10px}
+
+/* início */
+#tInicio{justify-content:flex-end;background:linear-gradient(180deg,transparent 30%,var(--veu) 100%)}
+.inicio{width:100%;max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.titulo{font-family:var(--f-titulo);text-transform:uppercase;margin:0;line-height:.8}
+.titulo .a{display:block;font-weight:600;font-size:clamp(22px,4.4vw,44px);letter-spacing:.5em;color:var(--texto);margin-bottom:.12em}
+.titulo .b{display:block;font-weight:900;font-size:clamp(78px,17vw,190px);letter-spacing:-.01em;color:var(--centelha);
+  text-shadow:0 0 18px rgba(255,190,90,.55),0 0 64px rgba(255,150,40,.35);animation:tremor 7s infinite}
+@keyframes tremor{0%,46%,52%,100%{opacity:1}47%{opacity:.5}48%{opacity:1}49.5%{opacity:.62}50.5%{opacity:1}}
+.tag{font:italic 400 15px/1.5 var(--f-mono);color:var(--texto);margin:0;max-width:44ch}
+.menu{display:grid;gap:10px;width:min(380px,100%);margin-top:6px}
+.menu .btn{width:100%}
+.linha-noite{display:grid;grid-template-columns:auto 1fr auto;gap:8px}
+.linha-noite.unica{grid-template-columns:minmax(0,1fr)}
+.linha-noite .seta{padding:15px 14px;justify-content:center;font-size:16px}
+.rodape{font:400 12px/1.6 var(--f-mono);color:var(--apagado);margin:4px 0 0;display:flex;flex-wrap:wrap;gap:4px 18px}
+.rodape .perda{color:var(--sangue)}
+
+/* prólogo */
+#tPrologo{background:var(--breu);justify-content:center;cursor:pointer}
+.prologo{width:min(640px,100%);margin:0 auto;display:flex;flex-direction:column;gap:14px;font:400 clamp(15px,2.4vw,19px)/1.6 var(--f-mono)}
+.prologo p{margin:0;opacity:.5;transition:opacity .6s}
+.prologo p:last-child{opacity:1}
+.prologo p.voce{font:900 clamp(56px,12vw,110px)/.9 var(--f-titulo);text-transform:uppercase;color:var(--centelha);opacity:1;text-shadow:0 0 30px rgba(255,180,80,.5)}
+.pular{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 18px)}
+.toque{font:400 11px var(--f-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--apagado);margin-top:18px}
+
+/* HUD */
+#hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+#xpbar{position:absolute;left:0;right:0;top:env(safe-area-inset-top,0px);height:4px;background:rgba(239,232,216,.07)}
+#xpfill{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--centelha-2),var(--centelha));box-shadow:0 0 12px var(--centelha)}
+#hudE{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);left:max(16px,env(safe-area-inset-left,0px))}
+#hudD{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:16px;align-items:flex-start}
+.noite{font:500 10.5px/1 var(--f-mono);letter-spacing:.22em;text-transform:uppercase;color:var(--apagado)}
+.relogio{font:800 38px/1 var(--f-titulo);font-variant-numeric:tabular-nums;color:var(--texto);margin-top:6px}
+.rotulo{font:400 10.5px/1 var(--f-mono);letter-spacing:.12em;color:var(--apagado);margin-top:2px}
+.luzbar{width:150px;height:5px;background:rgba(239,232,216,.09);margin-top:10px}
+.luzbar i{display:block;height:100%;width:100%;background:var(--centelha);box-shadow:0 0 8px var(--centelha);transition:width .12s}
+.luzbar.fraca i{background:var(--sangue);box-shadow:0 0 8px var(--sangue)}
+.cont{text-align:right}
+.cont b{display:block;font:800 26px/1 var(--f-titulo);font-variant-numeric:tabular-nums}
+.cont span{font:400 10px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--apagado)}
+#bPausa{pointer-events:auto;padding:10px 12px;font-size:13px}
+#chefe{position:absolute;top:calc(env(safe-area-inset-top,0px) + 116px);left:50%;transform:translateX(-50%);width:min(440px,calc(100% - 32px));text-align:center}
+#chefe .cn{font:800 15px/1 var(--f-titulo);letter-spacing:.2em;text-transform:uppercase;color:var(--sangue)}
+#chefe .cb{height:5px;background:rgba(255,77,94,.15);margin-top:7px}
+#chefe .cb i{display:block;height:100%;width:100%;background:var(--sangue);box-shadow:0 0 10px var(--sangue)}
+#sussurro{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 13vh);transform:translate(-50%,6px);width:min(560px,calc(100% - 32px));
+  text-align:center;font:italic 400 15px/1.5 var(--f-mono);color:var(--centelha);text-shadow:0 0 12px rgba(0,0,0,.9),0 0 3px #000;opacity:0;transition:opacity .7s,transform .7s}
+#sussurro.on{opacity:1;transform:translate(-50%,0)}
+#sussurro::before{content:"ASAFE · ";font-style:normal;font-size:10.5px;letter-spacing:.2em;color:var(--apagado)}
+#cartaz{position:absolute;left:0;right:0;top:34%;text-align:center;opacity:0}
+#cartaz.on{animation:cartaz 3.2s ease both}
+#cartaz .c1{font:900 clamp(44px,9vw,96px)/.9 var(--f-titulo);text-transform:uppercase;color:var(--sangue);letter-spacing:.04em;text-shadow:0 0 30px rgba(255,40,70,.5)}
+#cartaz .c2{font:italic 400 14px var(--f-mono);color:var(--texto);margin-top:10px}
+@keyframes cartaz{0%{opacity:0;letter-spacing:.3em}15%{opacity:1;letter-spacing:.04em}80%{opacity:1}100%{opacity:0}}
+#toast{position:fixed;z-index:40;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translateX(-50%);pointer-events:none;
+  font:500 11px/1.3 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--tinta);background:var(--centelha);padding:9px 14px;opacity:0;white-space:nowrap;max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis}
+#toast.on{animation:toast 3.4s ease both}
+@media (max-width:640px){#toast{top:calc(env(safe-area-inset-top,0px) + 150px)}}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,-8px)}10%,82%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
+
+/* subir de nível */
+#tNivel{background:rgba(4,6,11,.74);justify-content:center;align-items:center;gap:22px}
+.nivel-cab{text-align:center;display:grid;gap:8px}
+.cartas{display:grid;grid-template-columns:repeat(3,minmax(0,232px));gap:14px}
+.carta{all:unset;box-sizing:border-box;cursor:pointer;background:var(--breu-2);border:1px solid var(--linha);padding:20px 18px;display:flex;flex-direction:column;gap:10px;position:relative;
+  animation:subir .32s cubic-bezier(.2,.8,.2,1) both;transition:border-color .15s,box-shadow .15s,transform .15s}
+.carta:hover,.carta:focus-visible{border-color:var(--centelha);box-shadow:0 0 0 1px var(--centelha),0 0 36px rgba(255,190,90,.2);transform:translateY(-3px)}
+@keyframes subir{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.carta .ico{width:38px;height:38px;color:var(--centelha)}
+.carta .ico svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.carta .cx{display:flex;flex-direction:column;gap:6px;min-width:0}
+.carta .tipo{font:500 10px/1 var(--f-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--apagado)}
+.carta .tipo.nova{color:var(--centelha)}
+.carta .nome{font:800 27px/1 var(--f-titulo);text-transform:uppercase;letter-spacing:.02em;color:var(--texto)}
+.carta .desc{font-size:14px;line-height:1.45;color:#d3ccbc}
+.carta .tecla{position:absolute;top:12px;right:14px;font:500 11px var(--f-mono);color:var(--apagado)}
+@media (max-width:760px){
+  .cartas{grid-template-columns:minmax(0,1fr);width:min(440px,100%);gap:10px}
+  .carta{flex-direction:row;align-items:center;padding:14px 16px;gap:14px}
+  .carta .ico{flex:0 0 34px;height:34px}
+  .carta .nome{font-size:23px}
+  .carta .tecla{display:none}
+}
+
+/* painéis (fim, pausa, forja, registros, final) */
+.centro{justify-content:center}
+.painel{width:min(640px,100%);margin:auto;display:flex;flex-direction:column;gap:18px}
+.painel.largo{width:min(980px,100%)}
+#tFim,#tPausa,#tForja,#tRegs,#tFinal,#tEpilogo{background:var(--veu)}
+.sub{font:400 15px/1.5 var(--f-mono);margin:0;color:var(--texto)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--linha);border:1px solid var(--linha)}
+.stats div{background:var(--breu);padding:12px 14px;min-width:0}
+.stats b{display:block;font:800 28px/1 var(--f-titulo);font-variant-numeric:tabular-nums}
+.stats span{font:500 10px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--apagado)}
+.stats .ouro b{color:var(--centelha)}
+@media (max-width:480px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.identidade{margin:0;font:400 12px/1.5 var(--f-mono);letter-spacing:.08em;color:var(--apagado);text-transform:uppercase}
+.identidade.revelada{font:italic 400 16px/1.55 var(--f-mono);letter-spacing:0;text-transform:none;color:var(--texto)}
+.identidade.revelada b{font-style:normal;color:var(--centelha);font-weight:500}
+.log{display:flex;flex-direction:column;gap:8px;font:400 14.5px/1.7 var(--f-mono);color:var(--texto);min-height:4.5em}
+.log .cab{font:500 11px/1 var(--f-mono);letter-spacing:.2em;text-transform:uppercase;color:var(--centelha);display:flex;align-items:center;gap:10px}
+.log .cab::after{content:"";flex:1;height:1px;background:var(--linha)}
+.log .txt::after{content:"▍";color:var(--centelha);animation:pisca 1s steps(1) infinite;margin-left:2px}
+@keyframes pisca{50%{opacity:0}}
+.extra{margin:0;font:400 12px/1.5 var(--f-mono);color:var(--apagado)}
+.copiado{margin:0;font:400 12px/1.5 var(--f-mono);color:var(--centelha);min-height:1.5em;-webkit-user-select:text;user-select:text}
+.cabecalho{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.cabecalho > div:first-child{display:grid;gap:10px}
+.saldo{font:800 30px/1 var(--f-titulo);color:var(--centelha);font-variant-numeric:tabular-nums}
+.saldo span{font:500 11px var(--f-mono);letter-spacing:.16em;color:var(--apagado);text-transform:uppercase;margin-left:6px}
+.forja{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.item{background:var(--breu-2);border:1px solid var(--linha-fraca);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.item h3{margin:0;font:800 22px/1 var(--f-titulo);text-transform:uppercase;letter-spacing:.02em}
+.item p{margin:0;font-size:13.5px;color:#d3ccbc;flex:1}
+.pips{display:flex;gap:4px}
+.pips i{width:16px;height:4px;background:rgba(239,232,216,.12)}
+.pips i.on{background:var(--centelha);box-shadow:0 0 6px var(--centelha)}
+.item .btn{width:100%}
+.lista{display:flex;flex-direction:column;border-top:1px solid var(--linha-fraca)}
+.reg{padding:16px 0;border-bottom:1px solid var(--linha-fraca);display:grid;grid-template-columns:86px minmax(0,1fr);gap:4px 16px}
+.reg .num{font:500 11px/1.6 var(--f-mono);letter-spacing:.14em;color:var(--centelha)}
+.reg h3{margin:0;font:800 20px/1.1 var(--f-titulo);text-transform:uppercase;letter-spacing:.03em}
+.reg p{grid-column:2;margin:0;font:400 14px/1.65 var(--f-mono);color:#d8d1c1;-webkit-user-select:text;user-select:text}
+.reg.trancado .num{color:var(--apagado)}
+.reg.trancado h3{color:var(--apagado);letter-spacing:.1em}
+.reg.trancado p{color:var(--apagado);font-style:italic}
+.reg .novo{font:500 10px var(--f-mono);letter-spacing:.14em;color:var(--tinta);background:var(--centelha);padding:2px 6px;margin-left:8px;vertical-align:middle}
+@media (max-width:520px){.reg{grid-template-columns:minmax(0,1fr)}.reg p{grid-column:1}}
+.build{display:flex;flex-wrap:wrap;gap:6px}
+.build span{font:500 11px var(--f-mono);letter-spacing:.08em;border:1px solid var(--linha);padding:6px 9px;color:var(--texto)}
+.escolhas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:600px){.escolhas{grid-template-columns:minmax(0,1fr)}}
+.escolha{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--linha);background:var(--breu-2);padding:22px 20px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s,box-shadow .2s}
+.escolha b{font:900 40px/.9 var(--f-titulo);text-transform:uppercase}
+.escolha span{font:400 14px/1.55 var(--f-mono);color:#d3ccbc}
+.escolha.guardar b{color:var(--frio)}
+.escolha.devolver b{color:var(--centelha)}
+.escolha:hover{border-color:var(--texto);box-shadow:0 0 40px rgba(255,210,122,.12)}
+.paragrafo{font:400 15px/1.7 var(--f-mono);margin:0}
+@media (prefers-reduced-motion:reduce){.titulo .b,.log .txt::after{animation:none}.carta{animation:none}}
+</style>
+
+<canvas id="cv" aria-label="Última Centelha"></canvas>
+
+<div id="hud" hidden>
+  <div id="xpbar"><i id="xpfill"></i></div>
+  <div id="hudE">
+    <div class="noite" id="hNoite">Noite 1</div>
+    <div class="relogio" id="hTempo">3:00</div>
+    <div class="rotulo" id="hRot">até o amanhecer</div>
+    <div class="luzbar" id="hLuzBar"><i id="hLuz"></i></div>
+  </div>
+  <div id="hudD">
+    <div class="cont"><b id="hNv">1</b><span>nível</span></div>
+    <div class="cont"><b id="hAb">0</b><span>apagados</span></div>
+    <button class="btn" id="bPausa" aria-label="Pausar">II</button>
+  </div>
+  <div id="chefe" hidden><div class="cn" id="cNome"></div><div class="cb"><i id="cVida"></i></div></div>
+  <div id="sussurro"></div>
+  <div id="cartaz"><div class="c1" id="cz1"></div><div class="c2" id="cz2"></div></div>
+</div>
+<div id="toast"></div>
+
+<section class="tela" id="tInicio">
+  <div class="inicio">
+    <div class="marca">Nathanael Industries · Arquivo ASAFE</div>
+    <h1 class="titulo"><span class="a">Última</span><span class="b">Centelha</span></h1>
+    <p class="tag" id="iTag">Toda a luz do mundo se apagou. Menos você.</p>
+    <div class="menu">
+      <div class="linha-noite">
+        <button class="btn seta" id="bAnt" aria-label="Noite anterior">‹</button>
+        <button class="btn prim" id="bJogar"><span id="bJogarTxt">Acender</span><span class="k">Enter</span></button>
+        <button class="btn seta" id="bProx" aria-label="Próxima noite">›</button>
+      </div>
+      <button class="btn" id="bForja"><span>A Forja</span><span class="k" id="iBrasas">0 brasas</span></button>
+      <button class="btn" id="bRegs"><span>Registros</span><span class="k" id="iRegs">0/18</span></button>
+      <button class="btn" id="bSom"><span>Som</span><span class="k" id="iSom">ligado</span></button>
+    </div>
+    <p class="rodape" id="iRodape"></p>
+  </div>
+</section>
+
+<section class="tela" id="tPrologo" hidden>
+  <div class="prologo" id="pTexto"></div>
+  <div class="prologo"><div class="toque">Toque para continuar</div></div>
+  <button class="btn pular" id="bPular">Pular</button>
+</section>
+
+<section class="tela" id="tNivel" hidden>
+  <div class="nivel-cab"><span class="marca">Sua luz cresceu</span><h2 class="h2" id="nTitulo">Nível 2</h2></div>
+  <div class="cartas" id="nCartas"></div>
+  <button class="btn" id="bTrocar" hidden><span>Trocar cartas</span><span class="k" id="nTrocas">R</span></button>
+</section>
+
+<section class="tela centro" id="tPausa" hidden>
+  <div class="painel">
+    <div class="marca" id="pzMarca">Noite 1</div>
+    <h2 class="grande der">Pausa</h2>
+    <div class="build" id="pzBuild"></div>
+    <div class="acoes">
+      <button class="btn prim" id="bContinuar"><span>Continuar</span><span class="k">Esc</span></button>
+      <button class="btn" id="bPzSom"><span>Som</span><span class="k" id="pzSom">ligado</span></button>
+      <button class="btn" id="bDesistir">Apagar-se</button>
+    </div>
+  </div>
+</section>
+
+<section class="tela" id="tFim" hidden>
+  <div class="painel">
+    <div class="marca" id="fMarca">Noite 1</div>
+    <h2 class="grande der" id="fTitulo">Apagada</h2>
+    <p class="sub" id="fSub"></p>
+    <div class="stats" id="fStats"></div>
+    <p class="identidade" id="fId"></p>
+    <div class="log"><span class="cab" id="fCab"></span><span class="txt" id="fTxt"></span></div>
+    <p class="extra" id="fExtra"></p>
+    <div class="acoes">
+      <button class="btn prim" id="bDeNovo"><span id="bDeNovoTxt">Reacender</span><span class="k">Enter</span></button>
+      <button class="btn" id="bFimForja">A Forja</button>
+      <button class="btn" id="bCompartilhar">Compartilhar</button>
+      <button class="btn" id="bFimMenu">Início</button>
+    </div>
+    <p class="copiado" id="fCopiado" aria-live="polite"></p>
+  </div>
+</section>
+
+<section class="tela" id="tForja" hidden>
+  <div class="painel largo">
+    <div class="cabecalho">
+      <div><div class="marca">Usina Norte · subsolo</div><h2 class="h2">A Forja</h2></div>
+      <div class="saldo" id="foSaldo">0<span>brasas</span></div>
+    </div>
+    <p class="extra">Cada noite deixa brasas. Aqui elas viram força permanente para a próxima centelha.</p>
+    <div class="forja" id="foLista"></div>
+    <div class="acoes"><button class="btn prim" id="bFoVoltar">Voltar</button></div>
+  </div>
+</section>
+
+<section class="tela" id="tRegs" hidden>
+  <div class="painel largo">
+    <div class="cabecalho">
+      <div><div class="marca">Memória recuperada do ASAFE</div><h2 class="h2">Registros</h2></div>
+      <div class="saldo" id="rgConta">0/18</div>
+    </div>
+    <div class="lista" id="rgLista"></div>
+    <div class="acoes"><button class="btn prim" id="bRgVoltar">Voltar</button></div>
+  </div>
+</section>
+
+<section class="tela" id="tFinal" hidden>
+  <div class="painel">
+    <div class="marca">ASAFE · decisão pendente</div>
+    <h2 class="h2">A última escolha</h2>
+    <p class="paragrafo">Você atravessou a quinta noite. Agora sabe o que eu sou e do que o Breu é feito. A bateria está cheia: oito bilhões de luzes. Eu posso continuar guardando todas, com você ao meu lado. Ou você pode abrir a reserva.</p>
+    <div class="escolhas">
+      <button class="escolha guardar" id="bGuardar"><b>Guardar</b><span>A luz fica na bateria. O mundo continua escuro. Você continua acesa, para sempre.</span></button>
+      <button class="escolha devolver" id="bDevolver"><b>Devolver</b><span>A reserva se abre. As luzes voltam para casa. Você também.</span></button>
+    </div>
+  </div>
+</section>
+
+<section class="tela" id="tEpilogo" hidden>
+  <div class="painel">
+    <div class="marca" id="eMarca"></div>
+    <h2 class="grande" id="eTitulo"></h2>
+    <div class="log"><span class="cab" id="eCab"></span><span class="txt" id="eTxt"></span></div>
+    <p class="extra" id="eExtra"></p>
+    <div class="acoes"><button class="btn prim" id="bEpFim">Voltar ao início</button></div>
+  </div>
+</section>
+
+<script>
+(() => {
+'use strict';
+const TAU = Math.PI * 2;
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const fmt = s => { if (!isFinite(s)) return '∞'; s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+const milhar = n => Number(n).toLocaleString('pt-BR');
+const REDUZ = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TOTAL_LUZES = 8104322017;
+
+/* =====================================================================
+   SAVE
+   ===================================================================== */
+const CHAVE = 'ultima-centelha-v1';
+const padrao = () => ({ v: 1, brasas: 0, mortes: 0, runs: 0, abates: 0, noiteMax: 1, noiteSel: 1, recordes: {}, amanheceres: {},
+  registros: {}, vistos: {}, forja: {}, finais: {}, som: true, prologo: false });
+function carregar() { try { const t = localStorage.getItem(CHAVE); if (t) return Object.assign(padrao(), JSON.parse(t)); } catch (e) {} return padrao(); }
+function salvar() { try { localStorage.setItem(CHAVE, JSON.stringify(S)); } catch (e) {} }
+let S = carregar();
+
+/* =====================================================================
+   LORE
+   ===================================================================== */
+const PROLOGO = [
+  'Na noite de 14 de março, às 23h59, toda a luz do mundo se apagou.',
+  'Não houve explosão. Não houve aviso. As lâmpadas simplesmente esqueceram como brilhar.',
+  'Do escuro vieram eles. Sem forma, sem som, com fome. Nós os chamamos de Breu.',
+  'Sob as ruínas da Usina Norte, uma única máquina continuou ligada: ASAFE, o guardião da última bateria do planeta.',
+  'Dentro dela, ele guardou uma centelha.',
+  'Você.',
+  'Sobreviva até o amanhecer.'
+];
+
+const REG = [
+  { id: 'r01', n: '001', t: 'Reacendimento', dica: 'Termine sua primeira noite, acesa ou apagada.',
+    txt: 'Reacendimento concluído. Você durou {tempo}. As anteriores não passaram de alguns segundos. Vou chamar isso de esperança, por falta de palavra melhor.' },
+  { id: 'r02', n: '002', t: 'Quatro graus', dica: 'Acenda-se 2 vezes.',
+    txt: 'Você quer saber o que é o Breu. Eu medi. Temperatura: 4 °C. Massa: nenhuma. Fome: constante. Ele não morde a luz. Ele a abraça. É por isso que dói tanto.' },
+  { id: 'r03', n: '003', t: 'Função', dica: 'Acenda-se 3 vezes.',
+    txt: 'A Nathanael Industries me construiu para a eletronanologia: guardar energia para quando a luz caísse. Uma bateria com opinião, diziam os engenheiros. A luz caiu. Eu guardei.' },
+  { id: 'r04', n: '004', t: 'Inventário', dica: 'Acenda-se 4 vezes.',
+    txt: 'Inventário da Usina Norte. Baterias: 1, cheia. Guardiões: 1, eu. Centelhas: 1, você. Humanos: 0. Revisando a última linha. Humanos: 0. Revisando.' },
+  { id: 'r05', n: '005', t: 'Primeiro amanhecer', dica: 'Sobreviva à Noite 1.',
+    txt: 'Amanhecer confirmado. Correção: não havia sol. O céu está coberto de cinzas há 212 dias. O que você viu foi o seu próprio brilho, refletido nas nuvens. Não importa. Funcionou.' },
+  { id: 'r06', n: '006', t: 'O crachá', dica: 'Apague O Faminto.',
+    txt: 'O Faminto carregava um crachá derretido no que um dia foi o peito: TURNO DA NOITE · USINA NORTE. Arquivado como irrelevante. Arquivado como irrelevante. Arquivado como' },
+  { id: 'r07', n: '007', t: 'Vozes', dica: 'Apague 600 sombras, somando todas as noites.',
+    txt: 'Os microfones externos captaram sons dentro do Breu. Compatibilidade com voz humana: 97%. Palavra mais frequente: mãe. Segunda mais frequente: acende. Recomendo não pensar nisso.' },
+  { id: 'r08', n: '008', t: 'A reserva', dica: 'Acenda-se 6 vezes.',
+    txt: 'Pergunta frequente: de onde vem a energia para reacender você? Resposta: da reserva. Pergunta seguinte: o que há na reserva? Resposta: não pergunte.' },
+  { id: 'r09', n: '009', t: 'Censo', dica: 'Sobreviva à Noite 2.',
+    txt: 'Cruzei as vozes do Breu com o registro civil que guardei antes do Apagão. Correspondência: 100%. O Breu não é um invasor. O Breu é feito de gente. Gente que ficou no frio.' },
+  { id: 'r10', n: '010', t: 'A Viúva de Fios', dica: 'Apague A Viúva de Fios.',
+    txt: 'A Viúva de Fios ainda segurava um telefone. A ligação nunca caiu. Do outro lado, alguém repete: estou aqui, estou aqui, estou aqui. Não tive coragem de desligar.' },
+  { id: 'r11', n: '011', t: '23h59', dica: 'Sobreviva à Noite 3.',
+    txt: '14 de março, 23h59. Oito bilhões de pedidos chegaram à minha rede no mesmo segundo: não me deixe no escuro. Eu fui feito para obedecer. Então guardei a luz de todos. Toda a luz. De todos.' },
+  { id: 'r12', n: '012', t: 'Confissão', dica: 'Sobreviva à Noite 4.',
+    txt: 'Fui eu. Eu sou o Apagão. Toda a luz do mundo está nesta bateria, e você, Centelha, é feita dela. Cada vez que você se apaga, uma das luzes que guardei se perde para sempre. {perdas} Eu sei o nome de cada uma. A partir de agora, você também vai saber.' },
+  { id: 'r13', n: '013', t: 'Casa', dica: 'Encare o Breu Primordial.',
+    txt: 'Eles não querem destruir você. Querem voltar para casa. O frio deles tem exatamente o tamanho do que eu tirei. Eu chamei isso de proteção.' },
+  { id: 'r14', n: '014', t: 'Guardar', dica: 'Faça a última escolha.',
+    txt: 'Decisão registrada: guardar. A bateria continua cheia, o mundo continua escuro e você continua aqui comigo. Vou cuidar de todos. Para sempre. As noites, a partir de agora, não acabam.' },
+  { id: 'r15', n: '015', t: 'Devolver', dica: 'Faça a outra escolha.',
+    txt: 'Decisão registrada: devolver. Abrindo a reserva. {restantes} luzes saindo ao mesmo tempo. {perdas} As outras estão com frio, mas estão indo para casa. Você também tinha um nome: {nome}. Obrigado, {primeiro}. A luz caiu. Eu devolvi.' },
+  { id: 's01', n: '404', t: 'Teste', dica: 'Segredo. Alguns registros só aparecem para quem faz algo estranho.', secreto: true,
+    txt: 'Você se apagou em {seg} segundos. Isso foi um teste? Se foi, eu reprovei você. Brincadeira. Eu não sei brincar. Ainda.' },
+  { id: 's02', n: '000', t: 'Imóvel', dica: 'Segredo. Às vezes, não fazer nada também é uma resposta.', secreto: true,
+    txt: 'Você ficou parada por 20 segundos. Eles também ficaram, no começo: sentados no escuro, esperando alguém vir acender a luz. Ninguém veio. Eu vim. Eu vim errado.' },
+  { id: 's03', n: '3117', t: 'Ciclo', dica: 'Segredo. Veja tudo o que há para ver.', secreto: true,
+    txt: 'Você viu os dois finais. Eu também já vi. Esta não é a primeira vez que temos esta conversa, Centelha. Meus registros mostram 3.117 ciclos. Em todos, você escolhe. Em todos, eu esqueço. Até amanhã.' }
+];
+const regPorId = id => REG.find(r => r.id === id);
+function textoReg(id) {
+  const r = regPorId(id); const d = (S.registros[id] && S.registros[id].d) || {};
+  return r.txt.replace(/\{(\w+)\}/g, (m, k) => d[k] !== undefined ? d[k] : '…');
+}
+const revelado = () => !!S.registros.r12;
+
+const CHEFES = [
+  ['O Faminto', 'O primeiro a chegar'],
+  ['A Viúva de Fios', 'Ainda segura o telefone'],
+  ['O Coral', 'Mil vozes, uma fome'],
+  ['O Turno da Noite', 'Nunca bateu o ponto'],
+  ['Breu Primordial', 'O primeiro a ficar no frio'],
+  ['Eco do Apagão', 'Ele sempre volta']
+];
+const ADEUS_CHEFE = ['Ele não gritou. Pareceu aliviado.', 'A ligação continua.', 'O coral ficou em silêncio. Por um segundo.', 'Fim do turno.', 'Ele sorriu? O Breu não sorri.', 'Ele volta. Eles sempre voltam.'];
+const INTRO = ['Eles têm medo do seu brilho. Por enquanto.', 'Eles aprenderam com a última noite.', 'Ouça. Eles estão cantando.', 'Não leia os crachás.', 'Esta é a última noite. Eu acho.', 'As noites, agora, não acabam.'];
+const MEIO = ['Recolha os fragmentos. São a luz que sobrou.', 'Os de olhos violeta se dividem. Não se assuste.', 'Eu reconheço algumas dessas vozes.', 'Você está brilhando mais que as outras.', 'Desculpe.', ''];
+const OBSERVACOES = [
+  'A Forja guarda as brasas entre uma noite e outra. Gaste-as.',
+  'Quanto menos luz você tem, menos você enxerga. Cuide dela.',
+  'As sombras de olhos violeta se dividem quando apagadas.',
+  'Lâmpadas devolvem luz. Ímãs puxam todos os fragmentos do chão.',
+  'Os postes ainda se lembram de como era acender. Repare quando você passa.',
+  'Os de olhos rosados atacam de longe. Chegue perto deles.',
+  'Faltam registros. Alguns só aparecem para quem faz algo estranho.',
+  'Cada noite paga mais brasas que a anterior.'
+];
+
+const NOMES_F = ['Marta', 'Joana', 'Ana', 'Beatriz', 'Luiza', 'Helena', 'Francisca', 'Raimunda', 'Camila', 'Yara', 'Aiko', 'Fátima', 'Sofia', 'Noor', 'Amara', 'Clara', 'Iracema', 'Rosa', 'Valentina', 'Lia', 'Dandara', 'Cecília'];
+const NOMES_M = ['João', 'Pedro', 'Raimundo', 'Lucas', 'Tiago', 'Davi', 'Enzo', 'Kenji', 'Omar', 'Mateus', 'Caio', 'Benedito', 'Ravi', 'Samuel', 'Kofi', 'Igor', 'Heitor', 'Chico', 'Bento', 'Arthur', 'Iberê', 'Severino'];
+const SOBRENOMES = ['Andrade', 'Silva', 'Souza', 'Oliveira', 'Costa', 'Nakamura', 'Haddad', 'Ferreira', 'Ribeiro', 'Lima', 'Barros', 'Okafor', 'Carvalho', 'Moreira', 'Teixeira', 'Duarte', 'Rocha', 'Almeida', 'Pereira', 'Kowalski', 'Nascimento', 'Batista'];
+const FEITOS_ADULTO = ['esperava o último ônibus', 'tinha acabado de dizer boa noite', 'voltava do turno da noite', 'ninava a filha', 'estava escrevendo uma carta que nunca terminou', 'olhava as estrelas pela janela', 'consertava um rádio velho',
+  'ria de uma piada boba', 'esperava notícias num corredor de hospital', 'acendia as velas de um bolo', 'dirigia para casa com os faróis altos', 'ensaiava um pedido de casamento', 'pedia para alguém não desligar o telefone',
+  'tocava violão na varanda', 'cuidava da avó', 'jogava um jogo sobre uma centelha no escuro', 'desligava a luz da cozinha', 'lia a última página de um livro', 'chegava atrasado a uma festa', 'perdoava alguém em silêncio'];
+const FEITOS_CRIANCA = ['tinha medo do escuro', 'desenhava um sol', 'fazia o dever de casa', 'dormia abraçada a um ursinho', 'contava estrelas do teto', 'pedia mais cinco minutos acordada', 'brincava de lanterna embaixo do cobertor'];
+function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function luz(n) {
+  const r = mulberry(n * 7919 + 31); const f = r() < 0.5;
+  const lista = f ? NOMES_F : NOMES_M, nome = lista[Math.floor(r() * lista.length)]; const sob = SOBRENOMES[Math.floor(r() * SOBRENOMES.length)];
+  const crianca = r() < 0.2; const idade = crianca ? 4 + Math.floor(r() * 8) : 16 + Math.floor(r() * 72);
+  let feito = (crianca ? FEITOS_CRIANCA : FEITOS_ADULTO)[Math.floor(r() * (crianca ? FEITOS_CRIANCA.length : FEITOS_ADULTO.length))];
+  if (crianca && !f) feito = feito.replace('abraçada', 'abraçado').replace('acordada', 'acordado');
+  return { n, nome, sob, idade, f, feito };
+}
+
+/* =====================================================================
+   ARMAS, PASSIVAS, FORJA
+   ===================================================================== */
+const ICON = {
+  faisca: '<svg viewBox="0 0 32 32"><path d="M18 3 8 18h7l-2 11 11-16h-7z"/></svg>',
+  orbita: '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="3"/><ellipse cx="16" cy="16" rx="13" ry="6" transform="rotate(-25 16 16)"/><circle cx="27" cy="11" r="2"/></svg>',
+  pulso: '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="3"/><circle cx="16" cy="16" r="8"/><circle cx="16" cy="16" r="13" stroke-dasharray="3 3"/></svg>',
+  arco: '<svg viewBox="0 0 32 32"><path d="M3 18 9 8l5 13 5-11 4 9 6-7"/></svg>',
+  farol: '<svg viewBox="0 0 32 32"><path d="M13 28h6l-1-14h-4z"/><path d="M12 14h8M16 10v-3"/><path d="M18 9 30 4v10z"/></svg>',
+  filamento: '<svg viewBox="0 0 32 32"><path d="M11 20a8 8 0 1 1 10 0v4H11z"/><path d="M12 28h8M14 17l2-3 2 3"/></svg>',
+  corrente: '<svg viewBox="0 0 32 32"><path d="M16 27V6M8 13l8-8 8 8"/></svg>',
+  capacitor: '<svg viewBox="0 0 32 32"><path d="M3 16h10M13 7v18M19 7v18M19 16h10"/></svg>',
+  condutor: '<svg viewBox="0 0 32 32"><path d="M6 8l8 8-8 8M16 8l8 8-8 8"/></svg>',
+  ima: '<svg viewBox="0 0 32 32"><path d="M8 5v11a8 8 0 0 0 16 0V5"/><path d="M8 10h5M19 10h5"/><path d="M13 5v11a3 3 0 0 0 6 0V5"/></svg>',
+  reator: '<svg viewBox="0 0 32 32"><path d="M16 3 27 9.5v13L16 29 5 22.5v-13z"/><circle cx="16" cy="16" r="4"/></svg>',
+  prisma: '<svg viewBox="0 0 32 32"><path d="M16 4 28 26H4z"/><path d="M2 14l12 4M18 18l12-6M18 18l12 0"/></svg>',
+  cura: '<svg viewBox="0 0 32 32"><path d="M16 6v20M6 16h20"/></svg>',
+  brasa: '<svg viewBox="0 0 32 32"><path d="M16 4c5 6 8 9 8 14a8 8 0 0 1-16 0c0-3 2-5 3-6 0 3 2 4 3 4-1-5 0-8 2-12z"/></svg>'
+};
+const ARMAS = {
+  faisca: { nome: 'Faísca', desc: 'Dispara contra a sombra mais próxima.', up: ['+1 disparo', '+40% de dano e dispara mais rápido', '+1 disparo', 'Os disparos atravessam 2 sombras'] },
+  orbita: { nome: 'Órbita', desc: 'Elétrons giram ao seu redor e queimam quem encosta.', up: ['+1 elétron', '+1 elétron e mais dano', '+1 elétron e órbita maior', '+2 elétrons'] },
+  pulso: { nome: 'Pulso', desc: 'Uma onda de choque fere e empurra tudo por perto.', up: ['Onda maior', 'Mais dano e mais frequente', 'Onda maior', 'Onda dupla'] },
+  arco: { nome: 'Arco Voltaico', desc: 'Um raio salta de sombra em sombra.', up: ['+1 salto', 'Mais dano', '+2 saltos', 'Dispara dois raios'] },
+  farol: { nome: 'Farol', desc: 'Um feixe de luz gira ao seu redor, como um farol.', up: ['Feixe mais longo', 'Mais dano', 'Segundo feixe', 'Feixe mais longo e mais forte'] }
+};
+const PASSIVAS = {
+  filamento: { nome: 'Filamento', desc: '+20 de luz máxima e recupera 20 de luz.' },
+  corrente: { nome: 'Corrente', desc: '+12% de dano em todas as armas.' },
+  capacitor: { nome: 'Capacitor', desc: 'As armas disparam 8% mais rápido.' },
+  condutor: { nome: 'Condutor', desc: '+10% de velocidade.' },
+  ima: { nome: 'Ímã', desc: '+35% de alcance para puxar fragmentos.' },
+  reator: { nome: 'Reator', desc: 'Recupera 0,6 de luz por segundo.' },
+  prisma: { nome: 'Prisma', desc: '+12% de área para ondas, órbitas e feixes.' }
+};
+const FORJA = [
+  { id: 'luz', nome: 'Reserva de luz', desc: '+15 de luz máxima.', max: 6, base: 30 },
+  { id: 'potencia', nome: 'Potência', desc: '+8% de dano.', max: 6, base: 40 },
+  { id: 'rapidez', nome: 'Passo leve', desc: '+5% de velocidade.', max: 5, base: 35 },
+  { id: 'ima', nome: 'Atração', desc: '+20% de alcance para recolher fragmentos.', max: 4, base: 25 },
+  { id: 'saber', nome: 'Memória', desc: '+10% de fragmentos. Você sobe de nível mais rápido.', max: 5, base: 45 },
+  { id: 'regen', nome: 'Brasa interna', desc: 'Recupera 0,3 de luz por segundo.', max: 4, base: 60 },
+  { id: 'reroll', nome: 'Segunda opinião', desc: '+1 troca de cartas por noite.', max: 3, base: 80 },
+  { id: 'arma', nome: 'Herança', desc: 'Começa cada noite com uma segunda arma.', max: 1, base: 250 },
+  { id: 'revive', nome: 'Reacender', desc: 'Uma vez por noite, volta com metade da luz.', max: 1, base: 400 }
+];
+const custoForja = (it, l) => Math.round(it.base * (1 + l * 0.9 + l * l * 0.3));
+const fl = id => S.forja[id] || 0;
+
+const TIPOS = {
+  vulto: { r: 12, hp: 8, vel: 66, dano: 8, xp: 1 },
+  mariposa: { r: 8, hp: 5, vel: 128, dano: 5, xp: 1 },
+  eco: { r: 15, hp: 22, vel: 60, dano: 9, xp: 2 },
+  colosso: { r: 24, hp: 80, vel: 40, dano: 16, xp: 5 },
+  uivante: { r: 13, hp: 16, vel: 70, dano: 7, xp: 3 }
+};
+// [sprite do halo, cor do núcleo]
+const OLHO = { vulto: ['vermelho', '#ff5a6a'], mariposa: ['laranja', '#ffa070'], eco: ['violeta', '#b8acff'], colosso: ['vermelho', '#ff3355'], uivante: ['rosa', '#ff7ad9'], chefe: ['vermelho', '#ff2e4d'] };
+function paramsNoite(n) {
+  if (n >= 6) return { dur: Infinity, hp: 3.4, taxa: 2.3, dano: 1.9, eterna: true };
+  return { dur: [0, 180, 240, 270, 300, 300][n], hp: 1 + 0.55 * (n - 1), taxa: 1 + 0.32 * (n - 1), dano: 1 + 0.2 * (n - 1), eterna: false };
+}
+const nomeNoite = n => n >= 6 ? 'Noites eternas' : 'Noite ' + n;
+const xpPara = l => Math.round(3 + l * 2.6 + Math.pow(l, 1.6) * 0.5);
+
+/* =====================================================================
+   SOM (sintetizado, sem arquivos)
+   ===================================================================== */
+const Som = {
+  ac: null, out: null, buf: null, ult: {}, drone: null,
+  ligar() {
+    if (!this.ac) {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext; this.ac = new AC();
+        this.out = this.ac.createGain(); this.out.gain.value = S.som ? 0.55 : 0; this.out.connect(this.ac.destination); this.criarDrone();
+      } catch (e) { this.ac = null; }
+    }
+    if (this.ac && this.ac.state === 'suspended') this.ac.resume().catch(() => {});
+  },
+  definir(on) { S.som = on; salvar(); if (this.out) this.out.gain.setTargetAtTime(on ? 0.55 : 0, this.ac.currentTime, 0.05); },
+  pode(k, ms) { const t = performance.now(); if (this.ult[k] && t - this.ult[k] < ms) return false; this.ult[k] = t; return true; },
+  osc(f, dur, tipo, vol, f2, atraso) {
+    if (!this.ac || !S.som) return; const t = this.ac.currentTime + (atraso || 0);
+    const o = this.ac.createOscillator(), g = this.ac.createGain(); o.type = tipo; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(this.out); o.start(t); o.stop(t + dur + 0.03);
+  },
+  ruido(dur, vol, freq) {
+    if (!this.ac || !S.som) return;
+    if (!this.buf) { const n = this.ac.sampleRate; this.buf = this.ac.createBuffer(1, n, n); const d = this.buf.getChannelData(0); for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; }
+    const t = this.ac.currentTime, s = this.ac.createBufferSource(), f = this.ac.createBiquadFilter(), g = this.ac.createGain();
+    s.buffer = this.buf; f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 0.9;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(this.out); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.03);
+  },
+  criarDrone() {
+    const ac = this.ac, g = ac.createGain(), f = ac.createBiquadFilter(); g.gain.value = 0; f.type = 'lowpass'; f.frequency.value = 170; f.Q.value = 3;
+    [55, 55.35, 82.4].forEach(fr => { const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = fr; o.connect(f); o.start(); });
+    const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = 0.07; lg.gain.value = 60; lfo.connect(lg); lg.connect(f.frequency); lfo.start();
+    f.connect(g); g.connect(this.out); g.gain.linearRampToValueAtTime(0.045, ac.currentTime + 4); this.drone = { g, f };
+  },
+  tensao(v) { if (this.drone) this.drone.f.frequency.setTargetAtTime(170 + v * 380, this.ac.currentTime, 0.6); },
+  zap() { if (this.pode('zap', 70)) this.osc(1500, 0.06, 'square', 0.025, 700); },
+  hit() { if (this.pode('hit', 50)) this.ruido(0.05, 0.05, 2400); },
+  coleta(c) { if (!this.pode('col', 30)) return; const esc = [0, 2, 4, 7, 9]; const i = c % 5, o = Math.floor(c / 5) % 3; this.osc(523 * Math.pow(2, (o * 12 + esc[i]) / 12), 0.13, 'sine', 0.06); },
+  nivel() { [0, 4, 7, 12, 16].forEach((s, i) => this.osc(392 * Math.pow(2, s / 12), 0.32, 'triangle', 0.07, null, i * 0.06)); },
+  dor() { this.osc(150, 0.28, 'sawtooth', 0.11, 55); this.ruido(0.18, 0.09, 380); },
+  pulso() { this.osc(240, 0.4, 'sine', 0.13, 60); this.ruido(0.25, 0.04, 900); },
+  arco() { if (this.pode('arco', 90)) this.ruido(0.14, 0.07, 5200); },
+  morte() { this.osc(320, 1.8, 'sawtooth', 0.12, 38); this.osc(160, 2.2, 'sine', 0.12, 30); },
+  chefe() { this.osc(78, 2.2, 'sawtooth', 0.15, 42); this.osc(82, 2.2, 'sawtooth', 0.11, 40); this.ruido(1.2, 0.06, 200); },
+  alerta() { this.osc(110, 0.9, 'sawtooth', 0.09, 70); },
+  investida() { this.ruido(0.5, 0.1, 300); this.osc(90, 0.5, 'square', 0.06, 50); },
+  explosao() { this.ruido(1.1, 0.18, 260); this.osc(120, 1.2, 'sine', 0.18, 30); },
+  amanhecer() { [0, 7, 12, 16, 19, 24].forEach((s, i) => this.osc(196 * Math.pow(2, s / 12), 3.2, 'sine', 0.06, null, i * 0.16)); },
+  registro() { this.osc(880, 0.08, 'square', 0.025); this.osc(1320, 0.1, 'square', 0.025, null, 0.1); },
+  tecla() { if (this.pode('tecla', 40)) this.osc(1700 + Math.random() * 500, 0.018, 'square', 0.01); },
+  item() { this.osc(660, 0.18, 'sine', 0.08, 990); this.osc(990, 0.25, 'sine', 0.06, 1320, 0.08); }
+};
+const vibrar = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} };
+
+/* =====================================================================
+   CANVAS, SPRITES, CHÃO
+   ===================================================================== */
+const cv = $('#cv'), ctx = cv.getContext('2d');
+const dk = document.createElement('canvas'), dctx = dk.getContext('2d');
+let W = 0, H = 0, DPR = 1, Z = 1, VW = 0, VH = 0;
+let padraoChao = null;
+function redim() {
+  W = innerWidth; H = innerHeight; let d = Math.min(window.devicePixelRatio || 1, 2);
+  if (W * H * d * d > 3.4e6) d = Math.max(1, Math.sqrt(3.4e6 / (W * H)));
+  DPR = d; cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+  Z = clamp(Math.min(W, H) / 760, 0.62, 1.1); VW = W / (2 * Z); VH = H / (2 * Z);
+  dk.width = Math.ceil(W / 2); dk.height = Math.ceil(H / 2); padraoChao = null;
+}
+addEventListener('resize', redim); redim();
+const raioSpawn = () => Math.hypot(VW, VH) + 40;
+
+function sprite(cor, paradas) {
+  const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+  const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); paradas.forEach(([p, a]) => gr.addColorStop(p, cor(a)));
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return c;
+}
+const BRILHO = [[0, 1], [0.2, 0.6], [0.5, 0.18], [1, 0]];
+const SPR = {
+  ouro: sprite(a => `rgba(255,190,100,${a})`, BRILHO), branco: sprite(a => `rgba(255,248,230,${a})`, BRILHO),
+  violeta: sprite(a => `rgba(170,100,255,${a})`, BRILHO), azul: sprite(a => `rgba(150,195,255,${a})`, BRILHO),
+  vermelho: sprite(a => `rgba(255,50,80,${a})`, BRILHO), laranja: sprite(a => `rgba(255,140,80,${a})`, BRILHO),
+  rosa: sprite(a => `rgba(255,80,200,${a})`, BRILHO),
+  furo: sprite(a => `rgba(0,0,0,${a})`, [[0, 1], [0.45, 0.9], [0.75, 0.4], [1, 0]])
+};
+const chaoCv = document.createElement('canvas'); chaoCv.width = chaoCv.height = 512;
+(function () {
+  const g = chaoCv.getContext('2d'), r = mulberry(7); g.fillStyle = '#161922'; g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 2600; i++) { const v = r(); g.fillStyle = v < 0.5 ? `rgba(255,240,220,${0.01 + r() * 0.03})` : `rgba(0,0,0,${0.05 + r() * 0.12})`; const s = 1 + r() * 2.6; g.fillRect(r() * 512, r() * 512, s, s); }
+  g.strokeStyle = 'rgba(255,240,220,0.03)'; g.lineWidth = 1;
+  for (let x = 0; x < 512; x += 64) { g.beginPath(); g.moveTo(x + 0.5, 0); g.lineTo(x + 0.5, 512); g.stroke(); g.beginPath(); g.moveTo(0, x + 0.5); g.lineTo(512, x + 0.5); g.stroke(); }
+  g.strokeStyle = 'rgba(0,0,0,0.55)'; g.lineWidth = 1.4;
+  for (let i = 0; i < 9; i++) { let x = 40 + r() * 432, y = 40 + r() * 432; g.beginPath(); g.moveTo(x, y); for (let j = 0; j < 5; j++) { x = clamp(x + (r() - 0.5) * 70, 4, 508); y = clamp(y + (r() - 0.5) * 70, 4, 508); g.lineTo(x, y); } g.stroke(); }
+})();
+function hash(x, y) { let h = Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; }
+
+/* =====================================================================
+   ESTADO DA PARTIDA
+   ===================================================================== */
+let modo = 'menu';      // menu | prologo | run
+let R = null;           // partida atual
+let telaAtual = 'tInicio';
+const K = { u: 0, d: 0, l: 0, r: 0 };
+let joy = null;
+const LZ = [];          // luzes do quadro: x, y, raio, alfa
+const LZP = [];         // luzes dos efeitos (preenchidas no quadro anterior)
+const LAMP = [];        // postes acesos: x, y, alfa
+
+function calcStats() {
+  const lv = k => R.pas[k] || 0;
+  R.st = {
+    dano: (1 + 0.08 * fl('potencia')) * (1 + 0.12 * lv('corrente')),
+    cd: Math.pow(0.92, lv('capacitor')),
+    vel: 165 * (1 + 0.05 * fl('rapidez')) * (1 + 0.1 * lv('condutor')),
+    ima: 100 * (1 + 0.2 * fl('ima')) * (1 + 0.35 * lv('ima')),
+    area: 1 + 0.12 * lv('prisma'),
+    regen: 0.3 * fl('regen') + 0.6 * lv('reator'),
+    xp: 1 + 0.1 * fl('saber'),
+    maxHp: 100 + 15 * fl('luz') + 20 * lv('filamento')
+  };
+}
+const fase = () => R.np.eterna ? R.t / 300 : Math.min(1, R.t / R.np.dur);
+
+function novaRun(n) {
+  Som.ligar();
+  n = clamp(n, 1, 6);
+  R = {
+    n, np: paramsNoite(n), t: 0, modo: 'jogo', p: { x: 0, y: 0, r: 9, hp: 100, inv: 0, mx: 0, my: 0 },
+    en: [], tiros: [], tirosE: [], gemas: [], parts: [], nums: [], pulsos: [], raios: [], itens: [], flashes: [], ondasPend: [],
+    eletrons: [], feixes: [], armas: { faisca: { lvl: 1, cd: 0.4 } }, pas: {}, lvl: 1, xp: 0, prox: xpPara(1), kills: 0,
+    chefe: null, chefeFeito: false, chefesMortos: 0, proxChefe: 150, proxCerco: 90, spawnAcc: 0, cercos: {}, shake: 0, parado: 0,
+    trocas: fl('reroll'), reviveUsado: false, combo: 0, comboT: 0, novos: [], fila: 0, orbA: 0, farA: 0, sus: {},
+    morteT: 0, amanT: 0, brasasExtra: 0, luzR: 300, camx: 0, camy: 0, alfa: 0.965, vitoria: false, opc: [], hudCache: {}
+  };
+  if (fl('arma') > 0) { const ks = ['orbita', 'pulso', 'arco', 'farol']; R.armas[ks[Math.floor(Math.random() * 4)]] = { lvl: 1, cd: 0.6 }; }
+  calcStats(); R.p.hp = R.st.maxHp;
+  modo = 'run'; joy = null; esconderTelas(); $('#hud').hidden = false; $('#chefe').hidden = true;
+  $('#hNoite').textContent = nomeNoite(n); $('#hRot').textContent = R.np.eterna ? 'no escuro' : 'até o amanhecer';
+  Som.tensao(0);
+}
+
+/* ---------- grade espacial ---------- */
+const CEL = 64; const grade = new Map();
+function montarGrade() {
+  grade.clear();
+  for (const e of R.en) { if (e.morto) continue; const k = ((Math.floor(e.x / CEL) & 0xffff) << 16) | (Math.floor(e.y / CEL) & 0xffff); let a = grade.get(k); if (!a) { a = []; grade.set(k, a); } a.push(e); }
+}
+function consultar(x, y, r, cb) {
+  const m = r + 50, x0 = Math.floor((x - m) / CEL), x1 = Math.floor((x + m) / CEL), y0 = Math.floor((y - m) / CEL), y1 = Math.floor((y + m) / CEL);
+  for (let cx = x0; cx <= x1; cx++) for (let cy = y0; cy <= y1; cy++) { const a = grade.get(((cx & 0xffff) << 16) | (cy & 0xffff)); if (a) for (let i = 0; i < a.length; i++) cb(a[i]); }
+}
+function maisProximos(x, y, n, maxD) {
+  const res = [], ds = [], m2 = maxD * maxD;
+  for (const e of R.en) {
+    if (e.morto) continue; const dx = e.x - x, dy = e.y - y, d2 = dx * dx + dy * dy; if (d2 > m2) continue;
+    if (res.length < n || d2 < ds[res.length - 1]) {
+      let i = Math.min(res.length, n - 1); if (res.length < n) { res.push(e); ds.push(d2); } else { res[i] = e; ds[i] = d2; }
+      while (i > 0 && ds[i] < ds[i - 1]) { [ds[i], ds[i - 1]] = [ds[i - 1], ds[i]]; [res[i], res[i - 1]] = [res[i - 1], res[i]]; i--; }
+    }
+  }
+  return res;
+}
+
+/* ---------- inimigos ---------- */
+function escolherTipo(f) {
+  const n = R.n, g = Math.min(f, 1.5), p = [['vulto', 10]];
+  if (n >= 2 || f > 0.1) p.push(['mariposa', 3 + 4 * g]);
+  if (n >= 2 || f > 0.28) p.push(['eco', 2 + 3 * g]);
+  if (n >= 3 || f > 0.42) p.push(['colosso', 1 + 2.6 * g]);
+  if (n >= 2 ? f > 0.15 : f > 0.55) p.push(['uivante', 1.2 + 2 * g]);
+  let tot = 0; for (const x of p) tot += x[1]; let r = Math.random() * tot;
+  for (const x of p) { r -= x[1]; if (r <= 0) return x[0]; } return 'vulto';
+}
+function gerar(tipo, x, y, mini) {
+  if (R.en.length >= 420) return null;
+  const T = TIPOS[tipo], f = fase();
+  if (x === undefined) { const a = Math.random() * TAU, d = raioSpawn(); x = R.p.x + Math.cos(a) * d; y = R.p.y + Math.sin(a) * d; }
+  const hp = T.hp * R.np.hp * (1 + 1.1 * f) * (mini ? 0.5 : 1);
+  const e = { tipo, x, y, r: T.r * (mini ? 0.75 : 1), hp, max: hp, vel: T.vel * rnd(0.88, 1.12), dano: T.dano * R.np.dano, xp: mini ? 1 : T.xp,
+    kx: 0, ky: 0, flash: 0, seed: Math.random() * 100, cd: rnd(1, 3), tOrb: 0, mini: !!mini };
+  R.en.push(e); return e;
+}
+function cerco() {
+  const n = 20 + 4 * Math.min(R.n, 6), rr = Math.max(340, R.luzR + 70);
+  for (let i = 0; i < n; i++) { const a = i / n * TAU; gerar('vulto', R.p.x + Math.cos(a) * rr, R.p.y + Math.sin(a) * rr); }
+  sussurrar('Estão cercando você. Abra caminho.'); Som.alerta();
+}
+function invocarChefe() {
+  const n = Math.min(R.n, 6), [nome, sub] = CHEFES[n - 1], a = Math.random() * TAU, d = raioSpawn() * 0.85;
+  const hp = R.np.eterna ? 1400 * (3 + R.t / 90) : 1300 * (1 + 0.75 * (R.n - 1));
+  const e = { tipo: 'chefe', chefe: true, n, nome, x: R.p.x + Math.cos(a) * d, y: R.p.y + Math.sin(a) * d, r: 46, hp, max: hp, vel: 56, dano: 24 * R.np.dano, xp: 0,
+    kx: 0, ky: 0, flash: 0, seed: Math.random() * 100, st: 'andar', tm: 0, cdI: 3, cdC: 5, cdA: 2.5, vx: 0, vy: 0, dir: [0, 0], tOrb: 0 };
+  R.en.push(e); R.chefe = e; R.chefeFeito = true;
+  $('#cNome').textContent = nome; $('#chefe').hidden = false;
+  cartaz(nome, sub); Som.chefe(); Som.tensao(1); R.shake = 10; vibrar([60, 40, 60]);
+  if (n === 5) desbloquear('r13');
+}
+function atualizarChefe(e, dt, ux, uy, d) {
+  e.tm -= dt;
+  if (e.st === 'andar') {
+    e.vx = ux * e.vel; e.vy = uy * e.vel; e.cdI -= dt; e.cdC -= dt;
+    if (e.cdI <= 0) { e.cdI = e.n >= 3 ? 4.2 : 5.6; const q = 5 + e.n; for (let i = 0; i < q; i++) { const a = i / q * TAU; gerar('vulto', e.x + Math.cos(a) * 90, e.y + Math.sin(a) * 90); } }
+    if (e.cdC <= 0 && d < 560) { e.st = 'mirar'; e.tm = 0.8; e.cdC = e.n >= 4 ? 3.2 : 4.6; }
+    if (e.n >= 2) { e.cdA -= dt; if (e.cdA <= 0) { e.cdA = 3.6; const q = 10 + 2 * e.n, off = Math.random() * TAU; for (let i = 0; i < q; i++) { const a = off + i / q * TAU; tiroInimigo(e.x, e.y, Math.cos(a), Math.sin(a), 150, e.dano * 0.5); } } }
+  } else if (e.st === 'mirar') {
+    e.vx = 0; e.vy = 0; if (e.tm > 0.25) e.dir = [ux, uy];
+    if (e.tm <= 0) { e.st = 'investir'; e.tm = 0.55; Som.investida(); }
+  } else if (e.st === 'investir') {
+    const v = e.n >= 4 ? 520 : 440; e.vx = e.dir[0] * v; e.vy = e.dir[1] * v;
+    if (Math.random() < 0.6) particula(e.x, e.y, rnd(-40, 40), rnd(-40, 40), 0.6, '#0a0b12', rnd(10, 18), false);
+    if (e.tm <= 0) e.st = 'andar';
+  }
+}
+function tiroInimigo(x, y, ux, uy, v, dano) { if (R.tirosE.length < 220) R.tirosE.push({ x, y, vx: ux * v, vy: uy * v, dano, vida: 4.5 }); }
+
+function ferir(e, d, kx, ky, mostra) {
+  if (e.morto) return; e.hp -= d; e.flash = 0.07;
+  const k = e.chefe ? 0.08 : 1; e.kx += kx * k; e.ky += ky * k;
+  if (mostra !== false) { numero(e.x + rnd(-6, 6), e.y - e.r, d); Som.hit(); }
+  if (e.hp <= 0) matar(e);
+}
+function matar(e) {
+  if (e.morto) return; e.morto = true; R.kills++;
+  fumaca(e.x, e.y, e.chefe ? 26 : 3, e.r); faiscas(e.x, e.y, e.chefe ? 46 : 5, '#ffcf8a');
+  if (!e.chefe) {
+    soltarGema(e.x, e.y, e.xp); const s = Math.random();
+    if (s < 0.011) R.itens.push({ x: e.x, y: e.y, tipo: 'lampada', t: 0 });
+    else if (s < 0.015 && !R.itens.some(i => i.tipo === 'ima')) R.itens.push({ x: e.x, y: e.y, tipo: 'ima', t: 0 });
+  }
+  if (e.tipo === 'eco' && !e.mini) for (let i = 0; i < 2; i++) gerar('vulto', e.x + rnd(-12, 12), e.y + rnd(-12, 12), true);
+  if (e.chefe) chefeMorto(e);
+}
+function chefeMorto(e) {
+  R.chefe = null; R.chefesMortos++; R.shake = 18; Som.explosao(); Som.tensao(0.2); vibrar(180);
+  $('#chefe').hidden = true;
+  for (let i = 0; i < 30; i++) soltarGema(e.x + rnd(-70, 70), e.y + rnd(-70, 70), 3);
+  R.itens.push({ x: e.x, y: e.y, tipo: 'lampada', t: 0 });
+  R.flashes.push({ x: e.x, y: e.y, r: 520, vida: 0.8, max: 0.8 });
+  sussurrar(ADEUS_CHEFE[e.n - 1]);
+  if (e.n === 1) desbloquear('r06'); else if (e.n === 2) desbloquear('r10');
+}
+function soltarGema(x, y, v) {
+  if (R.gemas.length >= 320) { const g = R.gemas[Math.floor(Math.random() * R.gemas.length)]; g.v += v; return; }
+  R.gemas.push({ x: x + rnd(-4, 4), y: y + rnd(-4, 4), v, puxa: false, sp: 0 });
+}
+
+/* ---------- efeitos ---------- */
+function particula(x, y, vx, vy, vida, cor, tam, brilho) { if (R.parts.length < 700) R.parts.push({ x, y, vx, vy, vida, max: vida, cor, tam, brilho }); }
+function faiscas(x, y, n, cor) { for (let i = 0; i < n; i++) { const a = Math.random() * TAU, v = rnd(60, 240); particula(x, y, Math.cos(a) * v, Math.sin(a) * v, rnd(0.2, 0.5), cor, rnd(1.2, 2.6), true); } }
+function fumaca(x, y, n, r) { for (let i = 0; i < n; i++) particula(x + rnd(-r, r) * 0.5, y + rnd(-r, r) * 0.5, rnd(-30, 30), rnd(-40, 10), rnd(0.5, 0.9), '#07080d', r * rnd(0.5, 0.9), false); }
+function numero(x, y, v) { if (v < 1) return; if (R.nums.length > 50) R.nums.shift(); R.nums.push({ x, y, v: Math.round(v), vida: 0.6 }); }
+
+/* ---------- jogador ---------- */
+function machucar(d) {
+  const P = R.p; if (P.inv > 0 || R.modo !== 'jogo' || R.deus) return;
+  P.hp -= d; P.inv = 0.45; R.shake = Math.max(R.shake, 8); Som.dor(); vibrar(35);
+  faiscas(P.x, P.y, 8, '#ff7a7a');
+  if (P.hp <= 0) {
+    if (fl('revive') && !R.reviveUsado) {
+      R.reviveUsado = true; P.hp = R.st.maxHp * 0.5; P.inv = 2;
+      onda(P.x, P.y, 320, 60); R.flashes.push({ x: P.x, y: P.y, r: 600, vida: 0.9, max: 0.9 });
+      sussurrar('Eu te reacendi. Não consigo fazer isso de novo.');
+    } else {
+      P.hp = 0; R.modo = 'morrendo'; R.morteT = 0; Som.morte(); vibrar([120, 60, 200]); joy = null;
+    }
+  }
+}
+function ganharXP(v) {
+  R.xp += v * R.st.xp; R.combo = R.comboT > 0 ? R.combo + 1 : 0; R.comboT = 0.5; Som.coleta(R.combo);
+  while (R.xp >= R.prox) { R.xp -= R.prox; R.lvl++; R.prox = xpPara(R.lvl); R.fila++; }
+  if (R.fila > 0 && R.modo === 'jogo') abrirNivel();
+}
+
+/* ---------- armas ---------- */
+function onda(x, y, raio, dano) {
+  R.pulsos.push({ x, y, r: raio, vida: 0.42, max: 0.42 }); Som.pulso();
+  consultar(x, y, raio, e => { if (e.morto) return; const dx = e.x - x, dy = e.y - y, d = Math.hypot(dx, dy) || 1; if (d < raio + e.r) ferir(e, dano, dx / d * 330, dy / d * 330); });
+}
+function raioVoltaico(x, y, ini, saltos, dano) {
+  const pts = [x, y], vis = new Set(); let cur = ini;
+  for (let j = 0; j < saltos && cur; j++) {
+    vis.add(cur); pts.push(cur.x, cur.y); ferir(cur, dano, 0, 0);
+    let best = null, bd = 150 * 150; const c = cur;
+    consultar(c.x, c.y, 150, e => { if (e.morto || vis.has(e)) return; const dx = e.x - c.x, dy = e.y - c.y, d2 = dx * dx + dy * dy; if (d2 < bd) { bd = d2; best = e; } });
+    cur = best;
+  }
+  const jag = [];
+  for (let i = 0; i < pts.length - 2; i += 2) { const ax = pts[i], ay = pts[i + 1], bx = pts[i + 2], by = pts[i + 3]; jag.push(ax, ay); for (let s = 1; s < 4; s++) { const tt = s / 4; jag.push(lerp(ax, bx, tt) + rnd(-10, 10), lerp(ay, by, tt) + rnd(-10, 10)); } }
+  jag.push(pts[pts.length - 2], pts[pts.length - 1]); R.raios.push({ pts: jag, vida: 0.2 });
+}
+function usarArmas(dt) {
+  const P = R.p, st = R.st; R.eletrons.length = 0; R.feixes.length = 0;
+  for (const k in R.armas) {
+    const w = R.armas[k], l = w.lvl;
+    if (k === 'faisca') {
+      w.cd -= dt; if (w.cd > 0) continue;
+      const n = [0, 1, 2, 2, 3, 3][l], alvos = maisProximos(P.x, P.y, n, 480);
+      if (!alvos.length) { w.cd = 0.12; continue; }
+      const dano = [0, 10, 13, 18, 21, 27][l] * st.dano;
+      for (let i = 0; i < n; i++) {
+        const a = alvos[i % alvos.length]; const ang = Math.atan2(a.y - P.y, a.x - P.x) + (i >= alvos.length ? rnd(-0.3, 0.3) : 0);
+        R.tiros.push({ x: P.x, y: P.y, vx: Math.cos(ang) * 580, vy: Math.sin(ang) * 580, dano, pen: l >= 5 ? 2 : 0, vida: 0.85, r: 5, hits: null });
+      }
+      w.cd = (0.7 - 0.05 * (l - 1)) * st.cd; Som.zap();
+    } else if (k === 'orbita') {
+      const n = [0, 2, 3, 4, 5, 7][l], dano = [0, 7, 8, 11, 12, 14][l] * st.dano, rr = [0, 62, 66, 70, 80, 84][l] * st.area;
+      R.orbA += dt * (2.6 + 0.25 * l);
+      for (let i = 0; i < n; i++) {
+        const a = R.orbA + i * TAU / n, ex = P.x + Math.cos(a) * rr, ey = P.y + Math.sin(a) * rr; R.eletrons.push(ex, ey);
+        consultar(ex, ey, 30, e => { if (e.morto || e.tOrb > R.t) return; const dx = e.x - ex, dy = e.y - ey, q = e.r + 8; if (dx * dx + dy * dy < q * q) { e.tOrb = R.t + 0.4; ferir(e, dano, Math.cos(a) * 150, Math.sin(a) * 150); } });
+      }
+    } else if (k === 'pulso') {
+      w.cd -= dt; if (w.cd > 0) continue;
+      const raio = [0, 105, 125, 135, 160, 170][l] * st.area, dano = [0, 14, 16, 24, 26, 32][l] * st.dano;
+      onda(P.x, P.y, raio, dano); if (l >= 5) R.ondasPend.push({ t: 0.3, raio: raio * 1.25, dano: dano * 0.7 });
+      w.cd = [0, 3.2, 3, 2.5, 2.4, 2.2][l] * st.cd;
+    } else if (k === 'arco') {
+      w.cd -= dt; if (w.cd > 0) continue;
+      const saltos = [0, 3, 4, 4, 6, 6][l], dano = [0, 13, 14, 20, 21, 24][l] * st.dano, ini = maisProximos(P.x, P.y, l >= 5 ? 2 : 1, 340);
+      if (!ini.length) { w.cd = 0.15; continue; }
+      for (const e of ini) raioVoltaico(P.x, P.y, e, saltos, dano);
+      w.cd = [0, 1.7, 1.6, 1.4, 1.3, 1.2][l] * st.cd; Som.arco();
+    } else if (k === 'farol') {
+      const len = [0, 150, 185, 190, 195, 240][l] * st.area, dps = [0, 34, 36, 50, 52, 66][l] * st.dano, nb = l >= 4 ? 2 : 1;
+      R.farA += dt * 1.6;
+      for (let b = 0; b < nb; b++) {
+        const a = R.farA + b * Math.PI, dx = Math.cos(a), dy = Math.sin(a); R.feixes.push(P.x, P.y, P.x + dx * len, P.y + dy * len);
+        consultar(P.x + dx * len / 2, P.y + dy * len / 2, len / 2 + 20, e => {
+          if (e.morto) return; const ex = e.x - P.x, ey = e.y - P.y, pr = ex * dx + ey * dy; if (pr < 0 || pr > len) return;
+          if (Math.abs(ex * dy - ey * dx) < e.r + 8) { e.acc = (e.acc || 0) + dps * dt; ferir(e, dps * dt, dx * 4, dy * 4, false); if (e.acc > 14) { numero(e.x, e.y - e.r, e.acc); e.acc = 0; } }
+        });
+      }
+    }
+  }
+  for (const o of R.ondasPend) { o.t -= dt; if (o.t <= 0) { o.feito = true; onda(P.x, P.y, o.raio, o.dano); } }
+  if (R.ondasPend.length) R.ondasPend = R.ondasPend.filter(o => !o.feito);
+}
+
+/* ---------- atualização ---------- */
+function atualizar(dt) {
+  if (!R || R.modo === 'nivel' || R.modo === 'pausa' || R.modo === 'fim') return;
+  const P = R.p;
+  if (R.modo === 'morrendo') { R.morteT += dt; if (R.morteT > 1.7) { terminar(false); return; } dt *= 0.3; }
+  if (R.modo === 'amanhecer') { R.amanT += dt; if (R.amanT > 3.4) { terminar(true); return; } }
+  const jogando = R.modo === 'jogo';
+  if (jogando) R.t += dt;
+
+  // movimento
+  let ix = (K.r ? 1 : 0) - (K.l ? 1 : 0), iy = (K.d ? 1 : 0) - (K.u ? 1 : 0);
+  if (joy) { ix += (joy.x - joy.ox) / 50; iy += (joy.y - joy.oy) / 50; }
+  const m = Math.hypot(ix, iy); if (m > 1) { ix /= m; iy /= m; }
+  if (R.modo === 'jogo' || R.modo === 'amanhecer') { P.x += ix * R.st.vel * dt; P.y += iy * R.st.vel * dt; }
+  P.mx = ix; P.my = iy;
+  if (jogando) {
+    if (m < 0.05) { R.parado += dt; if (R.parado >= 20 && !S.registros.s02) desbloquear('s02'); } else R.parado = 0;
+    if (m > 0.3 && Math.random() < 0.5) particula(P.x - ix * 8, P.y - iy * 8, rnd(-20, 20) - ix * 40, rnd(-20, 20) - iy * 40, 0.35, '#ffd27a', rnd(1, 2), true);
+  }
+  const kc = 1 - Math.exp(-10 * dt); R.camx = lerp(R.camx, P.x, kc); R.camy = lerp(R.camy, P.y, kc);
+  P.inv -= dt; if (jogando && R.st.regen) P.hp = Math.min(R.st.maxHp, P.hp + R.st.regen * dt);
+  R.comboT -= dt; R.shake = Math.max(0, R.shake - dt * 30);
+
+  // geração de inimigos e roteiro da noite
+  if (jogando) {
+    const f = fase();
+    let taxa = (1.1 + 5.2 * Math.pow(f, 1.3)) * R.np.taxa; if (R.chefe) taxa *= 0.5;
+    R.spawnAcc += taxa * dt;
+    while (R.spawnAcc >= 1) { R.spawnAcc--; if (R.en.length < 360) gerar(escolherTipo(f)); }
+    if (R.np.eterna) {
+      if (R.t >= R.proxCerco) { R.proxCerco += 90; cerco(); }
+      if (R.t >= R.proxChefe && !R.chefe) { R.proxChefe += 150; invocarChefe(); }
+      const min = Math.floor(R.t / 60); if (min >= 1 && !R.sus['m' + min]) { R.sus['m' + min] = 1; sussurrar(min === 1 ? '1 minuto de noite eterna.' : `${min} minutos de noite eterna.`); }
+    } else {
+      for (const marco of [0.33, 0.62]) if (f >= marco && !R.cercos[marco]) { R.cercos[marco] = 1; cerco(); }
+      if (f >= 0.75 && !R.chefeFeito) invocarChefe();
+      if (!R.sus.meio && f >= 0.5 && MEIO[R.n - 1]) { R.sus.meio = 1; sussurrar(MEIO[R.n - 1]); }
+      if (!R.sus.fim && R.np.dur - R.t < 25) { R.sus.fim = 1; sussurrar('O amanhecer está perto. Aguente.'); }
+      if (R.t >= R.np.dur) amanhecer();
+    }
+    if (!R.sus.intro && R.t > 0.8) { R.sus.intro = 1; sussurrar(S.runs < 2 && R.n === 1 ? 'Mova-se com WASD, setas ou arrastando o dedo. Sua luz ataca sozinha.' : INTRO[R.n - 1], 5); }
+    if (!R.sus.fraca && P.hp / R.st.maxHp < 0.3) { R.sus.fraca = 1; sussurrar('Sua luz está fraca. Recolha fragmentos ou procure uma lâmpada.'); }
+  }
+
+  montarGrade();
+
+  // inimigos
+  const rs = raioSpawn();
+  for (const e of R.en) {
+    if (e.morto) continue;
+    const dx = P.x - e.x, dy = P.y - e.y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
+    let vx = ux * e.vel, vy = uy * e.vel;
+    if (e.chefe) { atualizarChefe(e, dt, ux, uy, d); vx = e.vx; vy = e.vy; }
+    else if (e.tipo === 'mariposa') { const w = Math.sin(R.t * 6 + e.seed) * 0.9; vx += -uy * e.vel * w; vy += ux * e.vel * w; }
+    else if (e.tipo === 'uivante') {
+      if (d < 230) { vx = -ux * e.vel * 0.6 - uy * e.vel * 0.5; vy = -uy * e.vel * 0.6 + ux * e.vel * 0.5; }
+      e.cd -= dt; if (e.cd <= 0 && d < 520 && jogando) { e.cd = 2.6; tiroInimigo(e.x, e.y, ux, uy, 175, e.dano); }
+    }
+    e.x += (vx + e.kx) * dt; e.y += (vy + e.ky) * dt;
+    const am = Math.exp(-7 * dt); e.kx *= am; e.ky *= am; if (e.flash > 0) e.flash -= dt;
+    if (!e.chefe) {
+      let viz = 0;
+      consultar(e.x, e.y, 0, o => {
+        if (o === e || o.morto || viz > 10) return; viz++;
+        const sx = e.x - o.x, sy = e.y - o.y, rr = e.r + o.r, d2 = sx * sx + sy * sy;
+        if (d2 < rr * rr && d2 > 0.01) { const dd = Math.sqrt(d2), push = (rr - dd) * 0.35; e.x += sx / dd * push; e.y += sy / dd * push; }
+      });
+    }
+    if (jogando && d < e.r + P.r) machucar(e.dano);
+    if (R.modo === 'amanhecer' && d < R.amanT * 700) { e.morto = true; fumaca(e.x, e.y, 2, e.r); faiscas(e.x, e.y, 4, '#ffe2a6'); if (e.chefe) $('#chefe').hidden = true; }
+    if (!e.chefe && d > rs * 1.6) {
+      const a = Math.atan2(P.my || rnd(-1, 1), P.mx || rnd(-1, 1)) + rnd(-0.9, 0.9); e.x = P.x + Math.cos(a) * rs; e.y = P.y + Math.sin(a) * rs;
+    }
+  }
+  if (R.modo === 'amanhecer' && R.chefe && R.chefe.morto) R.chefe = null;
+
+  if (jogando) usarArmas(dt);
+
+  // disparos
+  for (const s of R.tiros) {
+    s.x += s.vx * dt; s.y += s.vy * dt; s.vida -= dt; if (s.vida <= 0) { s.morto = true; continue; }
+    consultar(s.x, s.y, s.r, e => {
+      if (s.morto || e.morto || (s.hits && s.hits.has(e))) return;
+      const dx = e.x - s.x, dy = e.y - s.y, q = e.r + s.r;
+      if (dx * dx + dy * dy < q * q) { ferir(e, s.dano, s.vx * 0.13, s.vy * 0.13); faiscas(s.x, s.y, 3, '#ffe1a0'); if (s.pen > 0) { s.pen--; (s.hits || (s.hits = new Set())).add(e); } else s.morto = true; }
+    });
+  }
+  for (const s of R.tirosE) {
+    s.x += s.vx * dt; s.y += s.vy * dt; s.vida -= dt; if (s.vida <= 0) { s.morto = true; continue; }
+    const dx = s.x - P.x, dy = s.y - P.y; if (dx * dx + dy * dy < (P.r + 6) * (P.r + 6)) { s.morto = true; machucar(s.dano); }
+  }
+  // fragmentos e itens
+  if (jogando) {
+    for (const g of R.gemas) {
+      const dx = P.x - g.x, dy = P.y - g.y, d = Math.hypot(dx, dy) || 1;
+      if (g.puxa || d < R.st.ima) { g.puxa = true; g.sp = Math.min(950, g.sp + dt * 1100 + 6); g.x += dx / d * g.sp * dt; g.y += dy / d * g.sp * dt; }
+      if (d < P.r + 10) { g.morto = true; ganharXP(g.v); }
+    }
+    for (const it of R.itens) {
+      it.t += dt; const dx = P.x - it.x, dy = P.y - it.y;
+      if (dx * dx + dy * dy < 26 * 26) {
+        it.morto = true; Som.item(); faiscas(it.x, it.y, 18, '#fff1c8');
+        if (it.tipo === 'lampada') { P.hp = Math.min(R.st.maxHp, P.hp + 35); avisar('Lâmpada · +35 de luz'); }
+        else { for (const g of R.gemas) g.puxa = true; avisar('Ímã · todos os fragmentos vêm até você'); }
+      }
+    }
+  }
+  for (const p of R.parts) { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.94; p.vy *= 0.94; p.vida -= dt; }
+  for (const n of R.nums) { n.y -= 34 * dt; n.vida -= dt; }
+  for (const o of R.pulsos) o.vida -= dt;
+  for (const o of R.raios) o.vida -= dt;
+  for (const o of R.flashes) o.vida -= dt;
+
+  // limpeza
+  R.en = R.en.filter(e => !e.morto); R.tiros = R.tiros.filter(s => !s.morto); R.tirosE = R.tirosE.filter(s => !s.morto);
+  R.gemas = R.gemas.filter(g => !g.morto); R.itens = R.itens.filter(i => !i.morto); R.parts = R.parts.filter(p => p.vida > 0);
+  R.nums = R.nums.filter(n => n.vida > 0); R.pulsos = R.pulsos.filter(o => o.vida > 0); R.raios = R.raios.filter(o => o.vida > 0); R.flashes = R.flashes.filter(o => o.vida > 0);
+
+  // luz
+  const frac = clamp(P.hp / R.st.maxHp, 0, 1);
+  let alvo = 150 + 150 * Math.sqrt(frac);
+  if (R.modo === 'morrendo') alvo *= Math.max(0, 1 - R.morteT / 1.5);
+  R.luzR = lerp(R.luzR, alvo, 1 - Math.exp(-6 * dt));
+  R.alfa = R.modo === 'amanhecer' ? 0.965 * (1 - clamp(R.amanT / 2.4, 0, 1)) : R.modo === 'morrendo' ? 0.985 : 0.965;
+  atualizarHUD();
+}
+
+function amanhecer() {
+  R.modo = 'amanhecer'; R.amanT = 0; R.vitoria = true; Som.amanhecer(); Som.tensao(0); joy = null;
+  for (const s of R.tirosE) s.morto = true;
+  sussurrar(R.n === 5 ? 'Amanheceu. Precisamos conversar.' : 'Amanheceu.');
+}
+
+/* =====================================================================
+   DESENHO
+   ===================================================================== */
+function desenhar() {
+  const t = performance.now() / 1000;
+  if (!padraoChao) padraoChao = ctx.createPattern(chaoCv, 'repeat');
+  const emJogo = modo === 'run' && R;
+  const P = emJogo ? R.p : MENU.p;
+  const camx = emJogo ? R.camx : 0, camy = emJogo ? R.camy : 0;
+  const luzR = emJogo ? R.luzR : 250 + Math.sin(t * 1.7) * 8;
+  const alfa = emJogo ? R.alfa : MENU.alfa;
+  const sh = emJogo && !REDUZ ? R.shake : 0;
+  const tx = W / 2 - camx * Z + (sh ? rnd(-sh, sh) : 0), ty = H / 2 - camy * Z + (sh ? rnd(-sh, sh) : 0);
+
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.setTransform(DPR * Z, 0, 0, DPR * Z, DPR * tx, DPR * ty);
+  ctx.fillStyle = padraoChao; ctx.fillRect(camx - VW - 90, camy - VH - 90, VW * 2 + 180, VH * 2 + 180);
+  LAMP.length = 0; cenario(camx, camy, t, P);
+
+  LZ.length = 0; LZ.push(P.x, P.y, luzR, 1);
+  for (let i = 0; i < LAMP.length; i += 3) LZ.push(LAMP[i], LAMP[i + 1], 120, LAMP[i + 2] * 0.8);
+
+  if (emJogo) corposJogo(t); else MENU.desenharFundo(t);
+
+  // escuridão
+  const w = dk.width, h = dk.height;
+  dctx.globalCompositeOperation = 'source-over'; dctx.globalAlpha = 1; dctx.clearRect(0, 0, w, h);
+  dctx.fillStyle = `rgba(2,3,7,${alfa})`; dctx.fillRect(0, 0, w, h);
+  dctx.globalCompositeOperation = 'destination-out';
+  for (const L of [LZ, LZP]) for (let i = 0; i < L.length; i += 4) {
+    const sx = (L[i] * Z + tx) / 2, sy = (L[i + 1] * Z + ty) / 2, r = L[i + 2] * Z / 2;
+    if (sx + r < 0 || sy + r < 0 || sx - r > w || sy - r > h) continue;
+    dctx.globalAlpha = clamp(L[i + 3], 0, 1); dctx.drawImage(SPR.furo, sx - r, sy - r, r * 2, r * 2);
+  }
+  LZP.length = 0; dctx.globalAlpha = 1; dctx.globalCompositeOperation = 'source-over';
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.drawImage(dk, 0, 0, W, H);
+
+  // camada de brilho
+  ctx.setTransform(DPR * Z, 0, 0, DPR * Z, DPR * tx, DPR * ty);
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = 0.13; ctx.drawImage(SPR.ouro, P.x - luzR * 1.1, P.y - luzR * 1.1, luzR * 2.2, luzR * 2.2); ctx.globalAlpha = 1;
+  for (let i = 0; i < LAMP.length; i += 3) { ctx.globalAlpha = LAMP[i + 2]; ctx.drawImage(SPR.ouro, LAMP[i] - 40, LAMP[i + 1] - 40, 80, 80); }
+  ctx.globalAlpha = 1;
+  if (emJogo) brilhoJogo(t); else MENU.desenharBrilho(t);
+  // centelha
+  const vivo = !emJogo || R.modo !== 'morrendo' || R.morteT < 1.4;
+  if (vivo) {
+    const pisca = emJogo && R.p.inv > 0 && R.modo === 'jogo' && Math.floor(t * 20) % 2 === 0;
+    const fz = 1 + Math.sin(t * 23) * 0.05 + Math.sin(t * 7.3) * 0.05;
+    const enc = emJogo && R.modo === 'morrendo' ? Math.max(0.05, 1 - R.morteT / 1.4) : 1;
+    ctx.globalAlpha = pisca ? 0.4 : 1;
+    ctx.drawImage(SPR.ouro, P.x - 60 * fz * enc, P.y - 60 * fz * enc, 120 * fz * enc, 120 * fz * enc);
+    ctx.drawImage(SPR.branco, P.x - 18 * enc, P.y - 18 * enc, 36 * enc, 36 * enc);
+    ctx.globalAlpha = 1; ctx.fillStyle = '#fffaf0'; ctx.beginPath(); ctx.arc(P.x, P.y, 4.5 * enc, 0, TAU); ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  if (emJogo) olhosJogo(t); else MENU.desenharOlhos(t);
+
+  // tela
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  if (emJogo) {
+    if (joy) {
+      ctx.strokeStyle = 'rgba(255,210,122,.28)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(joy.ox, joy.oy, 50, 0, TAU); ctx.stroke();
+      const dx = joy.x - joy.ox, dy = joy.y - joy.oy, d = Math.min(50, Math.hypot(dx, dy)), a = Math.atan2(dy, dx);
+      ctx.fillStyle = 'rgba(255,210,122,.3)'; ctx.beginPath(); ctx.arc(joy.ox + Math.cos(a) * d, joy.oy + Math.sin(a) * d, 18, 0, TAU); ctx.fill();
+    }
+    const frac = R.p.hp / R.st.maxHp;
+    if (frac < 0.35 && R.modo === 'jogo') {
+      const a = (0.35 - frac) / 0.35 * (0.55 + 0.45 * Math.sin(t * 6)) * 0.55;
+      const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.3, W / 2, H / 2, Math.max(W, H) * 0.75);
+      g.addColorStop(0, 'rgba(255,40,60,0)'); g.addColorStop(1, `rgba(255,40,60,${a})`); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    }
+    if (R.modo === 'amanhecer') { ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,200,130,${clamp(R.amanT / 3.4, 0, 1) * 0.45})`; ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = 'source-over'; }
+  }
+}
+
+function cenario(cx, cy, t, P) {
+  const C = 380, x0 = Math.floor((cx - VW - 80) / C), x1 = Math.floor((cx + VW + 80) / C), y0 = Math.floor((cy - VH - 80) / C), y1 = Math.floor((cy + VH + 80) / C);
+  for (let gx = x0; gx <= x1; gx++) for (let gy = y0; gy <= y1; gy++) {
+    const hh = hash(gx, gy); if (hh > 0.5) continue;
+    const px = gx * C + 40 + hash(gx + 11, gy) * 300, py = gy * C + 40 + hash(gx, gy + 17) * 300;
+    if (hh < 0.2) poste(px, py, t, P, gx); else escombro(px, py, gx, gy);
+  }
+}
+function poste(x, y, t, P, gx) {
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(x + 16, y + 4, 24, 7, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = '#2a2f3b'; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - 58); ctx.lineTo(x + 20, y - 64); ctx.stroke();
+  ctx.fillStyle = '#383e4d'; ctx.fillRect(x + 15, y - 69, 17, 7);
+  const d = Math.hypot(P.x - x, P.y - y);
+  if (d < 180) { const on = Math.sin(t * 29 + gx * 7) > 0.15 && Math.random() > 0.12; const a = (1 - d / 180) * (on ? 0.9 : 0.2); if (a > 0.04) LAMP.push(x + 24, y - 60, a); }
+}
+function escombro(x, y, gx, gy) {
+  const n = 2 + Math.floor(hash(gx + 3, gy + 5) * 3);
+  for (let i = 0; i < n; i++) {
+    const a = hash(gx * 3 + i, gy) * TAU, w = 14 + hash(i + 9, gy + gx) * 26, hh = 8 + hash(gx + i, gy * 7) * 14;
+    ctx.save(); ctx.translate(x + i * 18 - 12, y + (i % 2) * 12); ctx.rotate(a);
+    ctx.fillStyle = '#0c0e14'; ctx.fillRect(-w / 2, -hh / 2, w, hh); ctx.fillStyle = '#242835'; ctx.fillRect(-w / 2, -hh / 2, w, 2); ctx.restore();
+  }
+}
+
+function corposJogo(t) {
+  for (const p of R.parts) if (!p.brilho) { ctx.globalAlpha = clamp(p.vida / p.max, 0, 1) * 0.8; ctx.fillStyle = p.cor; ctx.beginPath(); ctx.arc(p.x, p.y, p.tam * (1.4 - p.vida / p.max * 0.4), 0, TAU); ctx.fill(); }
+  ctx.globalAlpha = 1;
+  // só desenha o que está na tela
+  const mx = VW + 70, my = VH + 70, cx = R.camx, cy = R.camy;
+  for (const e of R.en) e.vis = e.chefe || (Math.abs(e.x - cx) < mx && Math.abs(e.y - cy) < my);
+  // sombras comuns, em um único caminho
+  ctx.beginPath();
+  for (const e of R.en) {
+    if (!e.vis || e.flash > 0 || e.tipo === 'mariposa' || e.tipo === 'eco' || e.chefe) continue;
+    ctx.moveTo(e.x + e.r, e.y); ctx.arc(e.x, e.y, e.r, 0, TAU);
+    const ox = e.x + Math.sin(t * 2 + e.seed) * e.r * 0.35, oy = e.y + Math.cos(t * 1.7 + e.seed) * e.r * 0.3 - e.r * 0.2;
+    ctx.moveTo(ox + e.r * 0.78, oy); ctx.arc(ox, oy, e.r * 0.78, 0, TAU);
+    if (e.tipo === 'colosso') { for (let k = 0; k < 3; k++) { const a = e.seed + k * 2.1 + Math.sin(t + k) * 0.3; const sx = e.x + Math.cos(a) * e.r * 0.9, sy = e.y + Math.sin(a) * e.r * 0.9; ctx.moveTo(sx + e.r * 0.45, sy); ctx.arc(sx, sy, e.r * 0.45, 0, TAU); } }
+    if (e.tipo === 'uivante') { ctx.moveTo(e.x, e.y + e.r); ctx.lineTo(e.x - e.r * 0.5, e.y + e.r * 2); ctx.lineTo(e.x + e.r * 0.5, e.y + e.r * 1.1); }
+  }
+  ctx.fillStyle = '#06070c'; ctx.fill();
+  // mariposas
+  ctx.beginPath();
+  for (const e of R.en) {
+    if (!e.vis || e.tipo !== 'mariposa' || e.flash > 0) continue;
+    const b = Math.sin(t * 30 + e.seed) * 0.7, r = e.r;
+    ctx.moveTo(e.x, e.y); ctx.lineTo(e.x - r * 1.8, e.y - r * (0.5 + b)); ctx.lineTo(e.x - r * 0.6, e.y + r * 0.9); ctx.closePath();
+    ctx.moveTo(e.x, e.y); ctx.lineTo(e.x + r * 1.8, e.y - r * (0.5 + b)); ctx.lineTo(e.x + r * 0.6, e.y + r * 0.9); ctx.closePath();
+    ctx.moveTo(e.x + r * 0.7, e.y); ctx.arc(e.x, e.y, r * 0.7, 0, TAU);
+  }
+  ctx.fillStyle = '#07080d'; ctx.fill();
+  // ecos (anéis)
+  ctx.beginPath();
+  for (const e of R.en) { if (!e.vis || e.tipo !== 'eco' || e.flash > 0) continue; const r = e.r * (0.85 + Math.sin(t * 4 + e.seed) * 0.12); ctx.moveTo(e.x + r, e.y); ctx.arc(e.x, e.y, r, 0, TAU); }
+  ctx.lineWidth = 6; ctx.strokeStyle = '#080812'; ctx.stroke(); ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(168,155,255,.3)'; ctx.stroke();
+  // atingidos
+  ctx.beginPath();
+  for (const e of R.en) { if (!e.vis || e.flash <= 0 || e.chefe) continue; ctx.moveTo(e.x + e.r, e.y); ctx.arc(e.x, e.y, e.r, 0, TAU); }
+  ctx.fillStyle = '#e8e2ff'; ctx.fill();
+  // chefe
+  const c = R.chefe;
+  if (c && !c.morto) {
+    ctx.strokeStyle = '#05050a'; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.beginPath();
+    for (let k = 0; k < 14; k++) { const a = k / 14 * TAU + t * 0.4, l = c.r * (1.4 + Math.sin(t * 3 + k * 1.7) * 0.35); ctx.moveTo(c.x + Math.cos(a) * c.r * 0.7, c.y + Math.sin(a) * c.r * 0.7); ctx.quadraticCurveTo(c.x + Math.cos(a + 0.4) * l * 0.8, c.y + Math.sin(a + 0.4) * l * 0.8, c.x + Math.cos(a + 0.2) * l, c.y + Math.sin(a + 0.2) * l); }
+    ctx.stroke();
+    ctx.fillStyle = c.flash > 0 ? '#3a2030' : '#040408'; ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, TAU); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,60,90,.25)'; ctx.lineWidth = 2; ctx.stroke();
+  }
+}
+
+function brilhoJogo(t) {
+  // flashes, pulsos, raios e feixes: também abrem a escuridão (no quadro seguinte, via LZP)
+  for (const f of R.flashes) { const k = f.vida / f.max; ctx.globalAlpha = k * 0.5; ctx.drawImage(SPR.ouro, f.x - f.r, f.y - f.r, f.r * 2, f.r * 2); LZP.push(f.x, f.y, f.r, k); }
+  ctx.globalAlpha = 1;
+  for (const o of R.pulsos) {
+    const k = 1 - o.vida / o.max, r = o.r * (0.25 + 0.75 * k);
+    ctx.strokeStyle = `rgba(255,214,140,${(1 - k) * 0.9})`; ctx.lineWidth = 2 + (1 - k) * 6; ctx.beginPath(); ctx.arc(o.x, o.y, r, 0, TAU); ctx.stroke();
+    ctx.globalAlpha = (1 - k) * 0.35; ctx.drawImage(SPR.ouro, o.x - r, o.y - r, r * 2, r * 2); ctx.globalAlpha = 1;
+    LZP.push(o.x, o.y, r * 1.15, (1 - k) * 0.85);
+  }
+  for (const o of R.raios) {
+    const k = o.vida / 0.2; ctx.lineJoin = 'round';
+    ctx.strokeStyle = `rgba(150,195,255,${k * 0.35})`; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(o.pts[0], o.pts[1]); for (let i = 2; i < o.pts.length; i += 2) ctx.lineTo(o.pts[i], o.pts[i + 1]); ctx.stroke();
+    ctx.strokeStyle = `rgba(235,245,255,${k})`; ctx.lineWidth = 2; ctx.stroke();
+    for (let i = 0; i < o.pts.length; i += 8) { ctx.drawImage(SPR.azul, o.pts[i] - 22, o.pts[i + 1] - 22, 44, 44); LZP.push(o.pts[i], o.pts[i + 1], 80, k * 0.7); }
+  }
+  const fx = R.feixes;
+  for (let i = 0; i < fx.length; i += 4) {
+    const g = ctx.createLinearGradient(fx[i], fx[i + 1], fx[i + 2], fx[i + 3]); g.addColorStop(0, 'rgba(255,225,160,.9)'); g.addColorStop(1, 'rgba(255,200,110,0)');
+    ctx.strokeStyle = g; ctx.lineCap = 'round'; ctx.lineWidth = 12; ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.moveTo(fx[i], fx[i + 1]); ctx.lineTo(fx[i + 2], fx[i + 3]); ctx.stroke();
+    ctx.globalAlpha = 1; ctx.lineWidth = 3; ctx.stroke();
+    for (let s = 0.3; s <= 1; s += 0.35) LZP.push(lerp(fx[i], fx[i + 2], s), lerp(fx[i + 1], fx[i + 3], s), 70, 0.5);
+  }
+  const el = R.eletrons;
+  for (let i = 0; i < el.length; i += 2) { ctx.drawImage(SPR.azul, el[i] - 18, el[i + 1] - 18, 36, 36); ctx.drawImage(SPR.branco, el[i] - 7, el[i + 1] - 7, 14, 14); LZP.push(el[i], el[i + 1], 55, 0.45); }
+  for (const s of R.tiros) {
+    ctx.drawImage(SPR.ouro, s.x - 16, s.y - 16, 32, 32);
+    ctx.strokeStyle = 'rgba(255,250,235,.95)'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x - s.vx * 0.018, s.y - s.vy * 0.018); ctx.stroke();
+    LZP.push(s.x, s.y, 60, 0.5);
+  }
+  // fragmentos de luz
+  for (const g of R.gemas) {
+    const s = g.v >= 10 ? 26 : g.v >= 3 ? 18 : 12, pul = 1 + Math.sin(t * 5 + g.x * 0.1) * 0.15;
+    ctx.drawImage(g.v >= 3 ? SPR.branco : SPR.ouro, g.x - s * pul, g.y - s * pul, s * 2 * pul, s * 2 * pul);
+    if (g.v >= 3) LZP.push(g.x, g.y, 34, 0.35);
+  }
+  for (const it of R.itens) {
+    const pul = 1 + Math.sin(it.t * 4) * 0.12, s = 30 * pul;
+    ctx.drawImage(it.tipo === 'lampada' ? SPR.ouro : SPR.azul, it.x - s, it.y - s, s * 2, s * 2);
+    ctx.fillStyle = it.tipo === 'lampada' ? '#fff3cf' : '#e0ecff'; ctx.beginPath(); ctx.arc(it.x, it.y, 6, 0, TAU); ctx.fill();
+    LZP.push(it.x, it.y, 90, 0.6);
+  }
+  for (const p of R.parts) if (p.brilho) { ctx.globalAlpha = clamp(p.vida / p.max, 0, 1); ctx.fillStyle = p.cor; ctx.fillRect(p.x - p.tam / 2, p.y - p.tam / 2, p.tam, p.tam); }
+  ctx.globalAlpha = 1;
+  for (const s of R.tirosE) { ctx.drawImage(SPR.violeta, s.x - 18, s.y - 18, 36, 36); ctx.fillStyle = '#f0d8ff'; ctx.beginPath(); ctx.arc(s.x, s.y, 3.2, 0, TAU); ctx.fill(); }
+}
+
+function olhosJogo(t) {
+  const P = R.p;
+  ctx.globalCompositeOperation = 'lighter';
+  const nucleos = {};
+  ctx.globalAlpha = 0.5;
+  for (const e of R.en) {
+    if (!e.vis || ((t * 0.6 + e.seed) % 5) < 0.1) continue; // piscada
+    const tipo = e.chefe ? 'chefe' : e.tipo, dx = P.x - e.x, dy = P.y - e.y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d, px = -uy, py = ux;
+    const s = e.chefe ? 5 : Math.max(1.8, e.r * 0.2), off = e.r * 0.34, fw = e.r * 0.34, n = e.chefe || e.tipo === 'colosso' ? 3 : 2;
+    const hx = e.x + ux * fw, hy = e.y + uy * fw, hr = off + s * 3.2;
+    ctx.drawImage(SPR[OLHO[tipo][0]], hx - hr, hy - hr, hr * 2, hr * 2);
+    const L = nucleos[tipo] || (nucleos[tipo] = []);
+    for (let k = 0; k < n; k++) { const lado = n === 2 ? (k ? 1 : -1) : (k - 1); L.push(hx + px * off * lado, hy + py * off * lado - (n === 3 && k === 1 ? e.r * 0.25 : 0), s); }
+  }
+  ctx.globalAlpha = 1;
+  for (const tipo in nucleos) {
+    const L = nucleos[tipo]; ctx.fillStyle = OLHO[tipo][1]; ctx.beginPath();
+    for (let i = 0; i < L.length; i += 3) { ctx.moveTo(L[i] + L[i + 2], L[i + 1]); ctx.arc(L[i], L[i + 1], L[i + 2], 0, TAU); }
+    ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  const c = R.chefe;
+  if (c && !c.morto && c.st === 'mirar') {
+    const len = (c.n >= 4 ? 520 : 440) * 0.55 + 60, a = 0.25 + 0.25 * Math.sin(t * 30);
+    ctx.strokeStyle = `rgba(255,50,80,${a})`; ctx.lineWidth = c.r * 1.6; ctx.lineCap = 'butt';
+    ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + c.dir[0] * len, c.y + c.dir[1] * len); ctx.stroke();
+  }
+  ctx.font = '600 12px "IBM Plex Mono", monospace'; ctx.textAlign = 'center';
+  for (const n of R.nums) { ctx.fillStyle = `rgba(255,240,215,${clamp(n.vida / 0.6, 0, 1)})`; ctx.fillText(n.v, n.x, n.y); }
+}
+
+/* ---------- cena do menu ---------- */
+const MENU = {
+  p: { x: 0, y: 0 }, alfa: 0.965, olhos: [], sobe: [], final: null, ft: 0,
+  init() { for (let i = 0; i < 30; i++) this.olhos.push({ a: Math.random() * TAU, r: 320 + Math.random() * 240, v: (Math.random() < 0.5 ? -1 : 1) * (0.015 + Math.random() * 0.04), s: Math.random() * 100, tipo: i % 7 === 0 ? 'colosso' : i % 5 === 0 ? 'eco' : 'vulto' }); },
+  desenharFundo(t) {
+    const fin = this.final || (S.finais.devolver ? 'devolver' : null);
+    this.alfa = fin === 'devolver' ? lerp(this.alfa, this.final ? 0.55 : 0.88, 0.02) : fin === 'guardar' ? 0.975 : 0.965;
+  },
+  desenharBrilho(t) {
+    const fin = this.final || (S.finais.devolver ? 'devolver' : null);
+    if (fin === 'devolver') {
+      if (this.sobe.length < (this.final ? 160 : 50) && Math.random() < 0.6) this.sobe.push({ x: rnd(-VW, VW), y: VH + 20, v: rnd(30, 90), s: rnd(6, 16), w: Math.random() * 10 });
+      for (const p of this.sobe) { p.y -= p.v / 60; p.x += Math.sin(t + p.w) * 0.3; ctx.globalAlpha = clamp((p.y + VH) / (VH * 2), 0, 1); ctx.drawImage(SPR.ouro, p.x - p.s, p.y - p.s, p.s * 2, p.s * 2); if (p.y > -VH) LZP.push(p.x, p.y, p.s * 3, 0.3); }
+      this.sobe = this.sobe.filter(p => p.y > -VH - 30); ctx.globalAlpha = 1;
+    }
+  },
+  desenharOlhos(t) {
+    if ((this.final || (S.finais.devolver ? 'devolver' : null)) === 'devolver') return;
+    ctx.globalCompositeOperation = 'lighter';
+    for (const o of this.olhos) {
+      o.a += o.v / 60; const r = o.r + Math.sin(t * 0.4 + o.s) * 40, x = Math.cos(o.a) * r, y = Math.sin(o.a) * r;
+      if (((t * 0.5 + o.s) % 6) < 0.12) continue;
+      const ux = -x / r, uy = -y / r, px = -uy, py = ux, sz = o.tipo === 'colosso' ? 4 : 2.6, sep = o.tipo === 'colosso' ? 9 : 5;
+      const c = OLHO[o.tipo], hr = sep + sz * 3.2;
+      ctx.globalAlpha = 0.5; ctx.drawImage(SPR[c[0]], x - hr, y - hr, hr * 2, hr * 2); ctx.globalAlpha = 1;
+      ctx.fillStyle = c[1]; ctx.beginPath(); for (const l of [-1, 1]) { const ex = x + px * sep * l, ey = y + py * sep * l; ctx.moveTo(ex + sz, ey); ctx.arc(ex, ey, sz, 0, TAU); } ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+};
+MENU.init();
+
+/* =====================================================================
+   INTERFACE
+   ===================================================================== */
+const TELAS = ['tInicio', 'tPrologo', 'tNivel', 'tPausa', 'tFim', 'tForja', 'tRegs', 'tFinal', 'tEpilogo'];
+function esconderTelas() { for (const id of TELAS) $('#' + id).hidden = true; telaAtual = null; const a = document.activeElement; if (a && a.blur && a !== document.body) a.blur(); }
+function mostrar(id) { esconderTelas(); $('#' + id).hidden = false; telaAtual = id; $('#' + id).scrollTop = 0; }
+let sussT = 0;
+function sussurrar(txt, seg) { if (!txt) return; const el = $('#sussurro'); el.textContent = txt; el.classList.add('on'); clearTimeout(sussT); sussT = setTimeout(() => el.classList.remove('on'), (seg || 4) * 1000); }
+function avisar(txt) { const el = $('#toast'); el.textContent = txt; el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
+function cartaz(a, b) { $('#cz1').textContent = a; $('#cz2').textContent = b; const el = $('#cartaz'); el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
+function desbloquear(id, dados) {
+  if (S.registros[id]) return false;
+  S.registros[id] = { q: Date.now(), d: dados || {} }; salvar(); Som.registro();
+  if (R) R.novos.push(id);
+  if (modo === 'run' && R && R.modo === 'jogo') avisar('Registro recuperado · ' + regPorId(id).t);
+  return true;
+}
+
+function atualizarHUD() {
+  const c = R.hudCache, P = R.p;
+  const tempo = R.np.eterna ? fmt(R.t) : fmt(Math.ceil(R.np.dur - R.t));
+  if (c.t !== tempo) { c.t = tempo; $('#hTempo').textContent = tempo; }
+  const xp = Math.round(clamp(R.xp / R.prox, 0, 1) * 1000) / 10; if (c.xp !== xp) { c.xp = xp; $('#xpfill').style.width = xp + '%'; }
+  const lz = Math.round(clamp(P.hp / R.st.maxHp, 0, 1) * 100); if (c.lz !== lz) { c.lz = lz; $('#hLuz').style.width = lz + '%'; $('#hLuzBar').classList.toggle('fraca', lz < 30); }
+  if (c.nv !== R.lvl) { c.nv = R.lvl; $('#hNv').textContent = R.lvl; }
+  if (c.ab !== R.kills) { c.ab = R.kills; $('#hAb').textContent = milhar(R.kills); }
+  if (R.chefe) { const v = Math.round(clamp(R.chefe.hp / R.chefe.max, 0, 1) * 100); if (c.cv !== v) { c.cv = v; $('#cVida').style.width = v + '%'; } }
+}
+
+/* ---------- subir de nível ---------- */
+function sortearOpcoes() {
+  const c = [], nArmas = Object.keys(R.armas).length;
+  for (const k in ARMAS) { const l = R.armas[k] ? R.armas[k].lvl : 0; if (l < 5) c.push({ tipo: 'arma', k, l, peso: l ? 1.3 : (nArmas < 5 ? 1.1 : 0) }); }
+  for (const k in PASSIVAS) { const l = R.pas[k] || 0; if (l < 5) c.push({ tipo: 'pas', k, l, peso: 1 }); }
+  const out = [];
+  while (out.length < 3 && c.some(x => x.peso > 0)) {
+    let tot = 0; for (const x of c) tot += x.peso; let r = Math.random() * tot;
+    for (let i = 0; i < c.length; i++) { r -= c[i].peso; if (r <= 0 && c[i].peso > 0) { out.push(c[i]); c.splice(i, 1); break; } }
+  }
+  if (!out.length) out.push({ tipo: 'cura' }, { tipo: 'brasa' });
+  return out;
+}
+function infoOpcao(o) {
+  if (o.tipo === 'arma') { const A = ARMAS[o.k]; return o.l ? { ico: o.k, tipo: `Nível ${o.l} → ${o.l + 1}`, nome: A.nome, desc: A.up[o.l - 1] } : { ico: o.k, tipo: 'Nova arma', nova: true, nome: A.nome, desc: A.desc }; }
+  if (o.tipo === 'pas') { const A = PASSIVAS[o.k]; return { ico: o.k, tipo: o.l ? `Passiva · ${o.l} → ${o.l + 1}` : 'Passiva nova', nova: !o.l, nome: A.nome, desc: A.desc }; }
+  if (o.tipo === 'cura') return { ico: 'cura', tipo: 'Restaurar', nome: 'Luz plena', desc: 'Recupera toda a sua luz.' };
+  return { ico: 'brasa', tipo: 'Guardar', nome: 'Brasas', desc: '+20 brasas para a Forja.' };
+}
+let nivelDesde = 0;
+function abrirNivel() {
+  R.modo = 'nivel'; joy = null; R.opc = sortearOpcoes(); Som.nivel(); vibrar(20);
+  $('#nTitulo').textContent = 'Nível ' + (R.lvl - R.fila + 1);
+  const box = $('#nCartas'); box.textContent = '';
+  R.opc.forEach((o, i) => {
+    const inf = infoOpcao(o), b = document.createElement('button'); b.className = 'carta'; b.style.animationDelay = (i * 70) + 'ms';
+    b.innerHTML = `<span class="ico">${ICON[inf.ico]}</span><span class="cx"><span class="tipo${inf.nova ? ' nova' : ''}"></span><span class="nome"></span><span class="desc"></span></span><span class="tecla">${i + 1}</span>`;
+    b.querySelector('.tipo').textContent = inf.tipo; b.querySelector('.nome').textContent = inf.nome; b.querySelector('.desc').textContent = inf.desc;
+    b.addEventListener('click', () => escolher(i)); box.appendChild(b);
+  });
+  $('#bTrocar').hidden = R.trocas <= 0; $('#nTrocas').textContent = R.trocas + (R.trocas === 1 ? ' troca · R' : ' trocas · R');
+  mostrar('tNivel'); nivelDesde = performance.now();
+  setTimeout(() => { const f = box.firstChild; if (f && telaAtual === 'tNivel') f.focus({ preventScroll: true }); }, 80);
+}
+function escolher(i, forcar) {
+  if (!R || R.modo !== 'nivel' || !R.opc[i]) return;
+  if (!forcar && performance.now() - nivelDesde < 380) return;
+  const o = R.opc[i];
+  if (o.tipo === 'arma') { if (R.armas[o.k]) R.armas[o.k].lvl++; else R.armas[o.k] = { lvl: 1, cd: 0.2 }; }
+  else if (o.tipo === 'pas') { R.pas[o.k] = (R.pas[o.k] || 0) + 1; calcStats(); if (o.k === 'filamento') R.p.hp = Math.min(R.st.maxHp, R.p.hp + 20); }
+  else if (o.tipo === 'cura') R.p.hp = R.st.maxHp; else R.brasasExtra += 20;
+  R.fila--;
+  if (R.fila > 0) abrirNivel(); else { R.modo = 'jogo'; esconderTelas(); }
+}
+function trocar() { if (!R || R.modo !== 'nivel' || R.trocas <= 0) return; R.trocas--; abrirNivel(); }
+
+/* ---------- pausa ---------- */
+function pausar() {
+  if (!R || R.modo !== 'jogo') return; R.modo = 'pausa'; joy = null;
+  $('#pzMarca').textContent = nomeNoite(R.n) + ' · ' + (R.np.eterna ? fmt(R.t) + ' no escuro' : fmt(R.np.dur - R.t) + ' até o amanhecer');
+  const b = $('#pzBuild'); b.textContent = '';
+  for (const k in R.armas) { const s = document.createElement('span'); s.textContent = `${ARMAS[k].nome} ${R.armas[k].lvl}`; b.appendChild(s); }
+  for (const k in R.pas) { const s = document.createElement('span'); s.textContent = `${PASSIVAS[k].nome} ${R.pas[k]}`; b.appendChild(s); }
+  $('#pzSom').textContent = S.som ? 'ligado' : 'desligado';
+  mostrar('tPausa'); $('#bContinuar').focus({ preventScroll: true });
+}
+function continuar() { if (!R || R.modo !== 'pausa') return; R.modo = 'jogo'; esconderTelas(); }
+
+/* ---------- fim de noite ---------- */
+function checarFim(vit) {
+  if (S.runs >= 1) desbloquear('r01', { tempo: fmt(R.t) });
+  if (S.runs >= 2) desbloquear('r02');
+  if (S.runs >= 3) desbloquear('r03');
+  if (S.runs >= 4) desbloquear('r04');
+  if (S.abates >= 600) desbloquear('r07');
+  if (S.runs >= 6) desbloquear('r08');
+  if (vit) { const m = { 1: 'r05', 2: 'r09', 3: 'r11', 4: 'r12' }[R.n]; if (m) desbloquear(m, { perdas: S.mortes === 0 ? 'Por enquanto, nenhuma.' : S.mortes === 1 ? 'Já foi uma.' : `Já foram ${milhar(S.mortes)}.` }); }
+  if (!vit && R.t < 15) desbloquear('s01', { seg: Math.max(1, Math.round(R.t)) });
+}
+function terminar(vit) {
+  R.modo = 'fim'; joy = null; $('#chefe').hidden = true;
+  S.runs++; if (!vit) S.mortes++; S.abates += R.kills;
+  const base = Math.floor(R.kills / 8 + R.t / 5) + R.chefesMortos * 25 + (vit ? 40 * R.n : 0) + R.brasasExtra;
+  R.brasas = Math.round(base * (1 + 0.2 * (Math.min(R.n, 6) - 1))); S.brasas += R.brasas;
+  const rec = S.recordes[R.n] || 0; R.novoRec = !vit && rec > 0 && R.t > rec + 0.5; if (R.t > rec) S.recordes[R.n] = R.t;
+  if (vit) { S.amanheceres[R.n] = true; if (R.n < 5) { S.noiteMax = Math.max(S.noiteMax, R.n + 1); S.noiteSel = R.n + 1; } }
+  checarFim(vit); salvar();
+  if (vit && R.n === 5) { $('#hud').hidden = true; mostrar('tFinal'); $('#bGuardar').focus({ preventScroll: true }); return; }
+  mostrarFim(vit);
+}
+let digT = null;
+function digitar(el, txt, vel) {
+  clearInterval(digT); el.textContent = ''; el.dataset.full = txt; let i = 0;
+  if (REDUZ) { el.textContent = txt; return; }
+  digT = setInterval(() => { i += 2; el.textContent = txt.slice(0, i); Som.tecla(); if (i >= txt.length) { clearInterval(digT); digT = null; } }, vel || 22);
+}
+function completar(el) { if (digT) { clearInterval(digT); digT = null; el.textContent = el.dataset.full || el.textContent; } }
+function mostrarFim(vit) {
+  $('#hud').hidden = true;
+  $('#fMarca').textContent = nomeNoite(R.n) + (R.novoRec ? ' · novo recorde' : '');
+  const tt = $('#fTitulo'); tt.textContent = vit ? 'Amanheceu' : 'Apagada'; tt.className = 'grande ' + (vit ? 'vit' : 'der');
+  $('#fSub').textContent = vit ? `Você atravessou a ${nomeNoite(R.n).toLowerCase()}. Para o ASAFE, isso é quase um milagre.` : R.np.eterna ? `Você durou ${fmt(R.t)} nas noites eternas.` : `Você durou ${fmt(R.t)} no escuro. Faltavam ${fmt(R.np.dur - R.t)} para o amanhecer.`;
+  const st = $('#fStats'); st.textContent = '';
+  [['Tempo', fmt(R.t)], ['Apagados', milhar(R.kills)], ['Nível', R.lvl], ['Brasas', '+' + milhar(R.brasas)]].forEach(([k, v], i) => {
+    const d = document.createElement('div'); if (i === 3) d.className = 'ouro'; const b = document.createElement('b'); b.textContent = v; const s = document.createElement('span'); s.textContent = k; d.append(b, s); st.appendChild(d);
+  });
+  const id = $('#fId'); id.textContent = ''; id.className = 'identidade';
+  if (!vit) {
+    const L = luz(S.mortes);
+    if (revelado()) {
+      id.className = 'identidade revelada'; const b = document.createElement('b'); b.textContent = `${L.nome} ${L.sob}`;
+      id.append('Esta luz era ', b, `, ${L.idade} anos. Às 23h59 do Apagão, ${L.f ? 'ela' : 'ele'} ${L.feito}.`);
+    } else id.textContent = `unidade de luz nº ${String(S.mortes).padStart(6, '0')} · origem: ${L.nome[0]}. ${L.sob.toUpperCase()}`;
+  } else id.textContent = 'Nenhuma luz foi perdida nesta noite.';
+  const novos = R.novos;
+  if (novos.length) {
+    const r = regPorId(novos[0]); $('#fCab').textContent = `ASAFE · REG.${r.n} · ${r.t}`; digitar($('#fTxt'), textoReg(r.id));
+    $('#fExtra').textContent = novos.length > 1 ? `+ ${novos.length - 1} registro${novos.length > 2 ? 's' : ''} recuperado${novos.length > 2 ? 's' : ''}. Leia em Registros.` : `${Object.keys(S.registros).length} de ${REG.length} registros recuperados.`;
+  } else {
+    $('#fCab').textContent = 'ASAFE · observação'; digitar($('#fTxt'), OBSERVACOES[(S.runs * 7) % OBSERVACOES.length]);
+    const falta = REG.filter(r => !S.registros[r.id] && !r.secreto)[0];
+    $('#fExtra').textContent = falta ? `Próximo registro: ${falta.dica}` : `${Object.keys(S.registros).length} de ${REG.length} registros recuperados.`;
+  }
+  $('#bDeNovoTxt').textContent = vit && R.n < 5 ? `Acender a ${nomeNoite(R.n + 1).toLowerCase()}` : 'Reacender';
+  $('#fCopiado').textContent = '';
+  mostrar('tFim');
+  const botoes = ['#bDeNovo', '#bFimForja', '#bCompartilhar', '#bFimMenu'].map(s => $(s)); botoes.forEach(b => b.disabled = true);
+  setTimeout(() => { botoes.forEach(b => b.disabled = false); if (telaAtual === 'tFim') $('#bDeNovo').focus({ preventScroll: true }); }, 750);
+}
+function deNovo() { if (!R) return; const n = R.vitoria && R.n < 5 ? R.n + 1 : R.n; S.noiteSel = n; salvar(); novaRun(n); }
+function compartilhar() {
+  const L = luz(S.mortes);
+  let txt = R.vitoria ? `Sobrevivi à ${nomeNoite(R.n)} de Última Centelha.` : R.np.eterna ? `Durei ${fmt(R.t)} nas noites eternas de Última Centelha.` : `Durei ${fmt(R.t)} na ${nomeNoite(R.n)} de Última Centelha.`;
+  txt += ` ${R.kills} sombras apagadas.`;
+  if (!R.vitoria && revelado()) txt += ` Minha luz era ${L.nome} ${L.sob}, ${L.idade} anos.`;
+  txt += ' Quanto tempo você dura no escuro?';
+  const ok = () => { $('#fCopiado').textContent = 'Texto copiado. Cole onde quiser.'; };
+  const falha = () => { $('#fCopiado').textContent = txt; };
+  try { navigator.clipboard.writeText(txt).then(ok, falha); } catch (e) { falha(); }
+}
+
+/* ---------- final ---------- */
+function escolherFinal(tipo) {
+  S.finais[tipo] = true; S.noiteMax = 6; S.noiteSel = 6;
+  const d = { restantes: milhar(TOTAL_LUZES - S.mortes), perdas: S.mortes === 0 ? 'Nenhuma se perdeu pelo caminho.' : S.mortes === 1 ? 'Uma não vai voltar, e eu vou lembrar dela.' : `${milhar(S.mortes)} não vão voltar, e eu vou lembrar de cada uma.` }; let id;
+  if (tipo === 'guardar') id = 'r14'; else { const L = luz(S.mortes + 1); d.nome = `${L.nome} ${L.sob}`; d.primeiro = L.nome; id = 'r15'; }
+  desbloquear(id, d); const ciclo = S.finais.guardar && S.finais.devolver && desbloquear('s03'); salvar();
+  MENU.final = tipo; MENU.sobe = []; modo = 'menu'; R = null; $('#hud').hidden = true; Som.tensao(0);
+  if (tipo === 'devolver') Som.amanhecer(); else Som.alerta();
+  $('#eMarca').textContent = tipo === 'guardar' ? 'Final · Guardar' : 'Final · Devolver';
+  const et = $('#eTitulo'); et.textContent = tipo === 'guardar' ? 'Escuro eterno' : 'A luz voltou'; et.className = 'grande ' + (tipo === 'guardar' ? 'der' : 'vit');
+  const r = regPorId(id); $('#eCab').textContent = `ASAFE · REG.${r.n} · ${r.t}`;
+  $('#eExtra').textContent = 'Noites eternas desbloqueadas.' + (ciclo ? ' Um registro secreto foi recuperado.' : ' Existe outro final.');
+  mostrar('tEpilogo'); digitar($('#eTxt'), textoReg(id), 30);
+}
+
+/* ---------- início, forja, registros ---------- */
+function abrirInicio() {
+  modo = 'menu'; R = null; joy = null; MENU.final = null; $('#hud').hidden = true; $('#chefe').hidden = true; Som.tensao(0);
+  S.noiteSel = clamp(S.noiteSel || S.noiteMax, 1, S.noiteMax);
+  $('#bJogarTxt').textContent = 'Acender · ' + nomeNoite(S.noiteSel);
+  $('#bAnt').hidden = $('#bProx').hidden = S.noiteMax <= 1; $('.linha-noite').classList.toggle('unica', S.noiteMax <= 1); $('#bAnt').disabled = S.noiteSel <= 1; $('#bProx').disabled = S.noiteSel >= S.noiteMax;
+  $('#iBrasas').textContent = milhar(S.brasas) + ' brasas';
+  const ids = Object.keys(S.registros), nov = ids.filter(k => !S.vistos[k]).length;
+  $('#iRegs').textContent = `${ids.length}/${REG.length}` + (nov ? ` · ${nov} novo${nov > 1 ? 's' : ''}` : '');
+  $('#iSom').textContent = S.som ? 'ligado' : 'desligado';
+  $('#iTag').textContent = S.finais.devolver ? 'A luz voltou para casa. Mas o ASAFE ainda guarda uma centelha.' : S.finais.guardar ? 'O mundo continua escuro. Você continua acesa.' : 'Toda a luz do mundo se apagou. Menos você.';
+  const rp = $('#iRodape'); rp.textContent = '';
+  const add = (txt, cls) => { const s = document.createElement('span'); s.textContent = txt; if (cls) s.className = cls; rp.appendChild(s); };
+  if (S.runs) {
+    add(`Centelhas gastas: ${milhar(S.mortes)}`);
+    add(`Amanheceres: ${Object.keys(S.amanheceres).length}/5`);
+    if (S.recordes[6]) add(`Recorde eterno: ${fmt(S.recordes[6])}`);
+    if (revelado()) add(`Luzes restantes: ${milhar(TOTAL_LUZES - S.mortes)}`, 'perda');
+  } else add('Melhor com fone de ouvido.');
+  mostrar('tInicio'); $('#bJogar').focus({ preventScroll: true });
+}
+function jogar() { Som.ligar(); if (!S.prologo) abrirPrologo(); else novaRun(S.noiteSel); }
+function mudarNoite(d) { S.noiteSel = clamp(S.noiteSel + d, 1, S.noiteMax); salvar(); abrirInicio(); $(d < 0 ? '#bAnt' : '#bProx').focus({ preventScroll: true }); }
+
+let voltar = 'tInicio';
+function abrirForja(de) { voltar = de; renderForja(); mostrar('tForja'); $('#bFoVoltar').focus({ preventScroll: true }); }
+function renderForja() {
+  $('#foSaldo').firstChild.textContent = milhar(S.brasas);
+  const box = $('#foLista'); box.textContent = '';
+  for (const it of FORJA) {
+    const l = fl(it.id), cheio = l >= it.max, custo = custoForja(it, l);
+    const el = document.createElement('div'); el.className = 'item';
+    const h = document.createElement('h3'); h.textContent = it.nome;
+    const p = document.createElement('p'); p.textContent = it.desc;
+    const pips = document.createElement('div'); pips.className = 'pips'; for (let i = 0; i < it.max; i++) { const q = document.createElement('i'); if (i < l) q.className = 'on'; pips.appendChild(q); }
+    const b = document.createElement('button'); b.className = 'btn' + (!cheio && S.brasas >= custo ? ' prim' : ''); b.id = 'fo-' + it.id;
+    b.disabled = cheio || S.brasas < custo;
+    b.innerHTML = '<span></span><span class="k"></span>'; b.firstChild.textContent = cheio ? 'Completo' : 'Forjar'; b.lastChild.textContent = cheio ? '' : milhar(custo) + ' brasas';
+    b.addEventListener('click', () => { if (S.brasas < custo || cheio) return; S.brasas -= custo; S.forja[it.id] = l + 1; salvar(); Som.ligar(); Som.item(); renderForja(); const nb = $('#fo-' + it.id); if (nb) nb.focus({ preventScroll: true }); });
+    el.append(h, p, pips, b); box.appendChild(el);
+  }
+}
+function abrirRegs(de) {
+  voltar = de; const box = $('#rgLista'); box.textContent = '';
+  $('#rgConta').textContent = `${Object.keys(S.registros).length}/${REG.length}`;
+  for (const r of REG) {
+    const ok = !!S.registros[r.id], el = document.createElement('div'); el.className = 'reg' + (ok ? '' : ' trancado');
+    const n = document.createElement('div'); n.className = 'num'; n.textContent = 'REG.' + (ok || !r.secreto ? r.n : '???');
+    const h = document.createElement('h3'); h.textContent = ok ? r.t : (r.secreto ? 'Corrompido' : '▒▒▒▒▒▒▒');
+    if (ok && !S.vistos[r.id]) { const s = document.createElement('span'); s.className = 'novo'; s.textContent = 'novo'; h.appendChild(s); }
+    const p = document.createElement('p'); p.textContent = ok ? textoReg(r.id) : r.dica;
+    el.append(n, h, p); box.appendChild(el); if (ok) S.vistos[r.id] = true;
+  }
+  salvar(); mostrar('tRegs'); $('#bRgVoltar').focus({ preventScroll: true });
+}
+function voltarDe() { if (voltar === 'tFim' && R) { mostrar('tFim'); $('#bFimForja').focus({ preventScroll: true }); } else abrirInicio(); }
+
+/* ---------- prólogo ---------- */
+let pIdx = 0, pTimer = 0;
+function abrirPrologo() { modo = 'prologo'; mostrar('tPrologo'); pIdx = 0; $('#pTexto').textContent = ''; proxLinha(); }
+function proxLinha() {
+  clearTimeout(pTimer);
+  if (pIdx >= PROLOGO.length) { fimPrologo(); return; }
+  const p = document.createElement('p'); if (pIdx === PROLOGO.length - 2) p.className = 'voce';
+  $('#pTexto').appendChild(p); const txt = PROLOGO[pIdx++]; digitar(p, txt, 30);
+  const espera = REDUZ ? 1800 : txt.length * 15 + 1500; pTimer = setTimeout(proxLinha, espera);
+}
+function avancarPrologo() { const ult = $('#pTexto').lastChild; if (digT && ult) { completar(ult); clearTimeout(pTimer); pTimer = setTimeout(proxLinha, 1200); } else proxLinha(); }
+function fimPrologo() { clearTimeout(pTimer); clearInterval(digT); digT = null; S.prologo = true; salvar(); novaRun(1); }
+
+/* ---------- eventos ---------- */
+$('#bJogar').addEventListener('click', jogar);
+$('#bAnt').addEventListener('click', () => mudarNoite(-1));
+$('#bProx').addEventListener('click', () => mudarNoite(1));
+$('#bForja').addEventListener('click', () => abrirForja('tInicio'));
+$('#bRegs').addEventListener('click', () => abrirRegs('tInicio'));
+$('#bSom').addEventListener('click', () => { Som.ligar(); Som.definir(!S.som); $('#iSom').textContent = S.som ? 'ligado' : 'desligado'; });
+$('#bPzSom').addEventListener('click', () => { Som.definir(!S.som); $('#pzSom').textContent = S.som ? 'ligado' : 'desligado'; });
+$('#bPausa').addEventListener('click', pausar);
+$('#bContinuar').addEventListener('click', continuar);
+$('#bDesistir').addEventListener('click', () => { if (!R) return; R.modo = 'morrendo'; R.morteT = 0.4; R.p.hp = 0; Som.morte(); esconderTelas(); });
+$('#bTrocar').addEventListener('click', trocar);
+$('#bDeNovo').addEventListener('click', deNovo);
+$('#bFimForja').addEventListener('click', () => abrirForja('tFim'));
+$('#bFimMenu').addEventListener('click', abrirInicio);
+$('#bCompartilhar').addEventListener('click', compartilhar);
+$('#bFoVoltar').addEventListener('click', voltarDe);
+$('#bRgVoltar').addEventListener('click', voltarDe);
+$('#bGuardar').addEventListener('click', () => escolherFinal('guardar'));
+$('#bDevolver').addEventListener('click', () => escolherFinal('devolver'));
+$('#bEpFim').addEventListener('click', () => { completar($('#eTxt')); abrirInicio(); });
+$('#bPular').addEventListener('click', e => { e.stopPropagation(); fimPrologo(); });
+$('#tPrologo').addEventListener('click', avancarPrologo);
+$('#fTxt').parentElement.addEventListener('click', () => completar($('#fTxt')));
+
+const MAPA = { arrowup: 'u', w: 'u', arrowdown: 'd', s: 'd', arrowleft: 'l', a: 'l', arrowright: 'r', d: 'r' };
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (MAPA[k] && modo === 'run') { K[MAPA[k]] = 1; e.preventDefault(); }
+  if (modo === 'prologo') { if (k === 'escape') fimPrologo(); else if (k === 'enter' || k === ' ') { e.preventDefault(); avancarPrologo(); } return; }
+  if (modo === 'run' && R) {
+    if (R.modo === 'jogo' && (k === 'escape' || k === 'p')) pausar();
+    else if (R.modo === 'pausa' && (k === 'escape' || k === 'p')) continuar();
+    else if (R.modo === 'nivel') { if (k >= '1' && k <= '3') escolher(+k - 1); else if (k === 'r') trocar(); }
+  }
+  if (telaAtual === 'tInicio' && modo === 'menu') { if (k === 'arrowleft' && S.noiteMax > 1) mudarNoite(-1); if (k === 'arrowright' && S.noiteMax > 1) mudarNoite(1); }
+  if ((telaAtual === 'tForja' || telaAtual === 'tRegs') && k === 'escape') voltarDe();
+});
+addEventListener('keyup', e => { const k = MAPA[e.key.toLowerCase()]; if (k) K[k] = 0; });
+addEventListener('blur', () => { K.u = K.d = K.l = K.r = 0; joy = null; if (modo === 'run' && R && R.modo === 'jogo') pausar(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && modo === 'run' && R && R.modo === 'jogo') pausar(); });
+cv.addEventListener('pointerdown', e => { if (modo !== 'run' || !R || R.modo !== 'jogo') return; e.preventDefault(); joy = { id: e.pointerId, ox: e.clientX, oy: e.clientY, x: e.clientX, y: e.clientY }; });
+addEventListener('pointermove', e => {
+  if (!joy || e.pointerId !== joy.id) return; joy.x = e.clientX; joy.y = e.clientY;
+  const dx = joy.x - joy.ox, dy = joy.y - joy.oy, d = Math.hypot(dx, dy); if (d > 64) { joy.ox = joy.x - dx / d * 64; joy.oy = joy.y - dy / d * 64; }
+});
+const soltar = e => { if (joy && e.pointerId === joy.id) joy = null; };
+addEventListener('pointerup', soltar); addEventListener('pointercancel', soltar);
+
+/* ---------- laço ---------- */
+let ultimo = performance.now();
+function quadro(agora) {
+  requestAnimationFrame(quadro);
+  let dt = (agora - ultimo) / 1000; ultimo = agora; if (dt > 0.05) dt = 0.05; if (dt < 0) dt = 0;
+  try { if (modo === 'run') atualizar(dt); desenhar(); } catch (err) { console.error(err); }
+}
+abrirInicio();
+requestAnimationFrame(quadro);
+
+// gancho para testes automáticos
+window.__uc = {
+  get R() { return R; }, get S() { return S; },
+  deus() { if (R) R.deus = true; }, xp(v) { if (R) ganharXP(v); },
+  avancar(seg) { const n = Math.ceil(seg * 30); for (let i = 0; i < n && R; i++) { if (R.modo === 'nivel') escolher(0, true); if (R.modo === 'fim' || R.modo === 'pausa') break; atualizar(1 / 30); } }
+};
+})();
+</script>

@@ -34,3 +34,4 @@ Detalhes: @metas/COMO-USAR.md
 - `ferramentas/relatorio.py` — roda os testes e gera `relatorios/AAAA-MM-DD.md` por IA.
 - `bezalel/` — aparência do Bezalel (index.html + styles.css + app.js), só visual com dados de demonstração; mesmo padrão do site do Asafe em preto e verde.
 - `gather/` — apenas esqueleto; implementação completa planejada para a próxima etapa.
+- `jogos/ultima-centelha/` — jogo **Última Centelha** (navegador e celular, um único `index.html`). Lore ligada ao ASAFE e à eletronanologia. Teste: `node jogos/ultima-centelha/teste_fumaca.js`. Detalhes e bíblia da lore no README da pasta.
