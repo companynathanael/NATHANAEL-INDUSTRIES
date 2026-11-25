@@ -6,6 +6,8 @@ Saída: relatorios/AAAA-MM-DD.md (e resumo no terminal)
 
 import csv
 import datetime as dt
+import html
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -55,6 +57,33 @@ def rodar_testes():
         return res
 
 
+def rodar_testes_node(res):
+    """Testes em JavaScript (node --test) do jogo Maskwood. Entram como IA "Maskwood"."""
+    pasta = RAIZ / "maskwood"
+    if not (pasta / "testes").is_dir():
+        return
+    if shutil.which("node") is None:
+        res["Maskwood"]["falha"].append(("node --test", "Node.js não está instalado"))
+        return
+    with tempfile.TemporaryDirectory() as tmp:
+        xml = Path(tmp) / "node.xml"
+        subprocess.run(["node", "--test", "--test-reporter=junit", f"--test-reporter-destination={xml}"],
+                       cwd=pasta, capture_output=True, text=True)
+        if not xml.exists():
+            res["Maskwood"]["falha"].append(("node --test", "não gerou resultados"))
+            return
+        for c in ET.parse(xml).getroot().iter("testcase"):
+            nome = html.unescape(c.get("name", ""))
+            if c.find("skipped") is not None:
+                continue
+            erro = c.find("failure") if c.find("failure") is not None else c.find("error")
+            if erro is not None:
+                msg = (erro.get("message") or "erro").splitlines()[0][:150]
+                res["Maskwood"]["falha"].append((nome, msg))
+            else:
+                res["Maskwood"]["ok"].append(nome)
+
+
 def metas_de_hoje(hoje: str):
     arq = RAIZ / "metas" / "METAS.csv"
     with arq.open(encoding="utf-8") as f:
@@ -65,6 +94,7 @@ def metas_de_hoje(hoje: str):
 def main():
     hoje = dt.date.today().isoformat()
     res = rodar_testes()
+    rodar_testes_node(res)
     total_ok = sum(len(r["ok"]) for r in res.values())
     total_falha = sum(len(r["falha"]) for r in res.values())
 

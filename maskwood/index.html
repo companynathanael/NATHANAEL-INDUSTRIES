@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maskwood: 100 Noites</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Terror de sobrevivência co-op: a vila de Pedra Alta sumiu em 1987. Não desvie o olhar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Special+Elite&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="tela" aria-label="Clareira de Pedra Alta, vista em primeira pessoa"></canvas>
+
+<!-- HUD do jogo -->
+<div id="hud" class="hud" hidden>
+  <header class="hud-topo">
+    <div class="fase">
+      <span id="fase-nome" class="fase-nome">Dia 1</span>
+      <span id="fase-relogio" class="fase-relogio">anoitece em 4:00</span>
+    </div>
+    <div class="hud-direita">
+      <div id="oleo" class="oleo" role="meter" aria-label="Óleo da Chama-Mãe">
+        <span class="oleo-rotulo">Chama-Mãe</span>
+        <span class="oleo-barra"><i id="oleo-preenchido"></i><b class="oleo-marca" title="nível de aviso"></b></span>
+        <span id="oleo-valor" class="oleo-valor">100%</span>
+      </div>
+      <button id="btn-menu" class="btn-menu" type="button" aria-label="Pausa e opções"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <div class="hud-centro-topo">
+    <div id="bussola" class="bussola"><span id="bussola-seta" class="bussola-seta" aria-hidden="true"></span><span id="bussola-texto">Chama-Mãe</span></div>
+    <div id="luz" class="luz">Na luz da Chama</div>
+  </div>
+
+  <div id="mira" class="mira" aria-hidden="true"></div>
+  <div id="cartao" class="cartao" aria-live="polite"><strong id="cartao-titulo"></strong><span id="cartao-texto"></span></div>
+  <div id="pausado" class="pausado">Pausado</div>
+  <div id="postura" class="postura"></div>
+  <div id="avisos" class="avisos" aria-live="polite"></div>
+
+  <!-- Controles de toque (celular) -->
+  <div id="toque" class="toque" hidden>
+    <div id="zona-andar" class="zona zona-andar"></div>
+    <div id="zona-olhar" class="zona zona-olhar"></div>
+    <div id="analogico" class="analogico" hidden><i id="analogico-pino"></i></div>
+    <div class="botoes-toque">
+      <button id="btn-agachar" class="btn-toque" type="button" aria-pressed="false">Agachar</button>
+      <button id="btn-correr" class="btn-toque" type="button" aria-pressed="false">Correr</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tela de entrada -->
+<section id="entrada" class="entrada" aria-labelledby="titulo-jogo">
+  <div class="entrada-conteudo">
+    <p class="entrada-ano">Pedra Alta · outubro de 1987</p>
+    <h1 id="titulo-jogo" class="titulo">Maskwood</h1>
+    <p class="subtitulo">100 Noites</p>
+    <p class="lema">Não desvie o olhar.</p>
+    <div class="entrada-acao">
+      <button id="btn-jogar" class="btn-jogar" type="button" disabled>Acendendo a Chama…</button>
+      <p id="entrada-progresso" class="entrada-progresso"></p>
+    </div>
+    <p class="historia">Em 1987 a vila de Pedra Alta sumiu numa única noite. Só ficaram as máscaras de porcelana, penduradas nas árvores. Vocês são a equipe de resgate que veio procurar os moradores e não achou mais o caminho de volta. No centro da vila, a Chama-Mãe ainda arde. Enquanto houver óleo, os Sem-Rosto não entram na luz.</p>
+    <ol class="regras">
+      <li><b>Não desvie o olhar.</b> Os Sem-Rosto só se movem quando ninguém está olhando.</li>
+      <li><b>Faça silêncio.</b> Barulho atrai as criaturas.</li>
+      <li><b>Mantenha a Chama acesa.</b> O óleo acaba. Busque mais de dia.</li>
+    </ol>
+    <p id="dica-controles" class="dica"></p>
+    <p class="versao">Protótipo · etapa 1 de 8: mapa, Chama-Mãe e ciclo dia/noite</p>
+  </div>
+</section>
+
+<!-- Menu de pausa -->
+<section id="menu" class="menu" hidden>
+  <div class="menu-painel" role="dialog" aria-modal="true" aria-labelledby="menu-titulo">
+    <h2 id="menu-titulo">Pausa</h2>
+    <button id="btn-continuar" class="btn-principal" type="button">Continuar</button>
+    <div id="menu-teste" class="menu-grupo">
+      <h3>Testes do protótipo</h3>
+      <button id="btn-tempo" type="button">Velocidade do tempo: 1×</button>
+      <button id="btn-pular" type="button">Pular para o fim do dia</button>
+      <button id="btn-oleo" type="button">Pôr óleo na Chama (+25)</button>
+    </div>
+    <div class="menu-grupo">
+      <button id="btn-apagar" class="btn-perigo" type="button">Apagar progresso</button>
+      <div id="confirmar-apagar" class="confirmar" hidden>
+        <p>Volta para o Dia 1 com a Chama cheia. Não dá para desfazer.</p>
+        <div class="confirmar-botoes">
+          <button id="btn-apagar-sim" class="btn-perigo" type="button">Apagar</button>
+          <button id="btn-apagar-nao" type="button">Cancelar</button>
+        </div>
+      </div>
+    </div>
+    <p id="menu-controles" class="dica"></p>
+  </div>
+</section>
+
+<div id="erro" class="erro" role="alert" hidden></div>
+
+<script type="module" src="src/cliente/main.js"></script>
+</body>
+</html>

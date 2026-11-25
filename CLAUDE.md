@@ -34,3 +34,4 @@ Detalhes: @metas/COMO-USAR.md
 - `ferramentas/relatorio.py` — roda os testes e gera `relatorios/AAAA-MM-DD.md` por IA.
 - `bezalel/` — aparência do Bezalel (index.html + styles.css + app.js), só visual com dados de demonstração; mesmo padrão do site do Asafe em preto e verde.
 - `gather/` — apenas esqueleto; implementação completa planejada para a próxima etapa.
+- `maskwood/` — jogo **MASKWOOD: 100 Noites** (terror co-op no navegador, Three.js; não é Roblox). `src/servidor` (autoridade), `src/cliente` (3D/HUD), `src/compartilhado` (Config, eventos, mapa). Testes: `cd maskwood && npm test`. Plano em 8 etapas em `maskwood/README.md` (etapa 1 pronta).

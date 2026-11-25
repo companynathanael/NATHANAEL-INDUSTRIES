@@ -1,0 +1,12 @@
+{
+  "name": "maskwood-100-noites",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MASKWOOD: 100 Noites — protótipo de terror de sobrevivência co-op no navegador (Three.js).",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "start": "python3 -m http.server 8080",
+    "artefato": "node ferramentas/gerar-artefato.mjs"
+  }
+}
